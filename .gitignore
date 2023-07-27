@@ -4,6 +4,7 @@
 *.bld
 *.cmd_log
 *.drc
+*.exe
 *.ll
 *.lso
 *.msd
