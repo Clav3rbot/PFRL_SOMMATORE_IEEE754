@@ -1,1 +1,1 @@
--intstyle "ise" -incremental -lib "secureip" -o "/home/andrea/PFRL/FPADDER_IEEE754/TB_SPECIAL_CASE_IDENTIFIER_isim_beh.exe" -prj "/home/andrea/PFRL/FPADDER_IEEE754/TB_SPECIAL_CASE_IDENTIFIER_beh.prj" "work.TB_SPECIAL_CASE_IDENTIFIER" 
+-intstyle "ise" -incremental -lib "secureip" -o "/home/andrea/PFRL_SOMMATORE_IEEE754/TB_SPECIAL_CASE_HANDLER_isim_par.exe" -prj "/home/andrea/PFRL_SOMMATORE_IEEE754/TB_SPECIAL_CASE_HANDLER_par.prj" "work.TB_SPECIAL_CASE_HANDLER" 
