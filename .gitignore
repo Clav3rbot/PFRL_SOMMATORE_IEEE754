@@ -3,7 +3,9 @@
 *.bit
 *.bld
 *.cmd_log
+*.cmd
 *.drc
+*.exe
 *.ll
 *.lso
 *.msd
