@@ -69,7 +69,7 @@ begin
         X => S,
         Y => NOTS,
         S => not COUT,
-        Z => Z
+        Z => DIFF
 	);
 
 end STRUCT;

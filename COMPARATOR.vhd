@@ -1,103 +1,76 @@
+
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity COMPARATOR is
-
-generic(
-		L: integer := 8
-	);
-
-port(
-		X     :  in   std_logic_vector(L-1 downto 0); -- primo operando
-		Y     :  in   std_logic_vector(L-1 downto 0); -- secondo operando
-		diff  :  out  std_logic_vector(L-1 downto 0); --  differenza
-		XLY   :  out  std_logic; -- operando x piu piccolo di y
-		XGY   :  out  std_logic -- operndo x piu grande di y 
+	generic ( N : NATURAL := 8);
+	port (
+		X : in std_logic_vector(N - 1 downto 0);
+		Y : in std_logic_vector(N - 1 downto 0);
+		DIFF : out std_logic_vector(N - 1 downto 0);
+		C : out std_logic
 	);
 end COMPARATOR;
 
-architecture structural of COMPARATOR is
-
-	--Componente Complemento a 2
-	component C2 is
-
-		generic(
-			M: integer := L
+architecture STRUCT of COMPARATOR is
+	component RIPPLE_CARRY_ADDER is
+		generic (N : NATURAL := 8);
+		port (
+			X: in std_logic_vector(N - 1 downto 0);
+			Y: in std_logic_vector(N - 1 downto 0);
+			CIN: in std_logic;
+			S: out std_logic_vector(N - 1 downto 0);
+			COUT: out std_logic
 		);
-
-		port(
-				x       :  in   std_logic_vector(M-1 downto 0);
-				x_c2    :  out  std_logic_vector(M-1 downto 0)
-		);
-
 	end component;
-
-	--Componente Sommatore/Sottratore
-	component CARRYLOOKAHEAD is
-
-		generic(
-			N: integer := L
+	
+	component CARRY_ADDER is
+		generic (N : NATURAL := 8);
+		port (
+			X : in std_logic_vector(N - 1 downto 0);
+			CIN : in std_logic;
+			S : out std_logic_vector(N - 1 downto 0);
+			COUT : out std_logic
 		);
-
-		port(
-			x       :  in   std_logic_vector(N-1 downto 0);
-         y       :  in   std_logic_vector(N-1 downto 0);
-			op      :  in   std_logic;
-         z       :  out  std_logic_vector(N-1 downto 0);
-         c_out   :  out  std_logic
-		);
-
 	end component;
-
-	--Segnali
-	signal    temp_op    :	 std_logic;
-	signal    diff_sign  :	 std_logic;
-	signal    gtz        :	 std_logic;
-	signal    diff_temp  :   std_logic_vector(L-1 downto 0);
-	signal    diff_tc2   :   std_logic_vector(L-1 downto 0);
-
+	
+	component MULTIPLEXER_N is
+        generic (N : NATURAL := 8);
+        port ( 
+            X : in  std_logic_vector(N - 1 downto 0);
+            Y : in  std_logic_vector(N - 1 downto 0);
+            S : in  std_logic; 
+            Z : out std_logic_vector(N - 1 downto 0)
+        );
+    end component;
+    
+	signal S    : std_logic_vector(N - 1 downto 0);
+	signal NOTS : std_logic_vector(N - 1 downto 0);
+	signal COUT : std_logic;
+	
 begin
 
-	--Differenza!
-	temp_op <= '1';
+	U1 :  RIPPLE_CARRY_ADDER port map (
+		X => X,
+      Y => not Y,
+      CIN => '1',
+      S => S,
+      COUT => COUT
+    );
+	 
+	C <= not COUT;
 
-	--Comparatore
-	CLA8: CARRYLOOKAHEAD
+	U2: CARRY_ADDER port map(
+		X => not S,
+		CIN => '1',
+		S => NOTS
+	);
+	 
+	U3: MULTIPLEXER_N port map(	 
+        X => S,
+        Y => NOTS,
+        S => not COUT,
+        Z => DIFF
+	);
 
-		generic map (
-			N => L
-		)
-
-		port map (
-			x     => X,
-			y     => Y,
-			op    => temp_op,
-         z     => diff_temp,
-         c_out => diff_sign
-		);
-
-	--Calcolo se >0
-	gtz <= '0' when (diff_temp = (diff_temp'range => '0')) else '1';
-
-	--Calcolo dei flag
-	XLY<= diff_sign;
-	XGY<= not(diff_sign) and gtz;
-
-
-	--C2 Differenza
-	C2Module: C2
-
-		generic map (
-			M => L
-		)
-
-		port map (
-			x     => diff_temp,
-         x_c2  => diff_tc2
-		);
-
-
-	--Mux risultato
-	diff <= diff_temp when diff_sign = '0' else diff_tc2;
-
-end structural;
+end STRUCT;
