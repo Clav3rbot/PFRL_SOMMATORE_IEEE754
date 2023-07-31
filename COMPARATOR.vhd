@@ -14,7 +14,7 @@ end COMPARATOR;
 
 architecture STRUCT of COMPARATOR is
 	component RIPPLE_CARRY_ADDER is
-		generic (N : NATURAL := 8);
+		generic (N : NATURAL);
 		port (
 			X: in std_logic_vector(N - 1 downto 0);
 			Y: in std_logic_vector(N - 1 downto 0);
@@ -25,7 +25,7 @@ architecture STRUCT of COMPARATOR is
 	end component;
 	
 	component CARRY_ADDER is
-		generic (N : NATURAL := 8);
+		generic (N : NATURAL);
 		port (
 			X : in std_logic_vector(N - 1 downto 0);
 			CIN : in std_logic;
