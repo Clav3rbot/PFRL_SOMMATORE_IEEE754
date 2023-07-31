@@ -4,12 +4,12 @@ USE IEEE.STD_LOGIC_1164.ALL;
 
 -- Multiplexer N bit entity
 ENTITY MULTIPLEXER_N IS
-    GENERIC (size : NATURAL := 8);
+    GENERIC (N : NATURAL := 8);
     PORT (
-        X : IN STD_LOGIC_VECTOR(size - 1 DOWNTO 0);
-        Y : IN STD_LOGIC_VECTOR(size - 1 DOWNTO 0);
+        X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+        Y : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
         S : IN STD_LOGIC;
-        Z : OUT STD_LOGIC_VECTOR(size - 1 DOWNTO 0)
+        Z : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0)
     );
 END MULTIPLEXER_N;
 
@@ -24,7 +24,7 @@ ARCHITECTURE STRUCT OF MULTIPLEXER_N IS
         );
     END COMPONENT;
 BEGIN
-    GEN : FOR i IN 0 TO size - 1 GENERATE
+    GEN : FOR i IN 0 TO N - 1 GENERATE
         U : MULTIPLEXER_2 PORT MAP(
             X => X(i),
             Y => Y(i),

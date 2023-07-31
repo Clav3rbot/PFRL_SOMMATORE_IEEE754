@@ -28,6 +28,14 @@ ARCHITECTURE RTL OF PRE_SUM IS
         );
     END COMPONENT;
 	 
+	 COMPONENT RIGHT_SHIFTER is
+		port (
+			X : in std_logic_vector(23 downto 0);
+			S : in std_logic_vector(7 downto 0);
+			Y : out std_logic_vector(23 downto 0)
+		);
+	 END COMPONENT;
+	 
 	 signal TEMPY : STD_LOGIC_VECTOR (31 downto 0);
 BEGIN
 	TEMPY <= (Y(31) xor OP) & Y(30 downto 0);

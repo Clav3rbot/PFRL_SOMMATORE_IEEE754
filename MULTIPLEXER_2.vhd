@@ -15,5 +15,5 @@ END MULTIPLEXER_2;
 -- Multiplexer 2 bit architecture
 ARCHITECTURE RTL OF MULTIPLEXER_2 IS
 BEGIN
-    Z <= (X AND (NOT S)) OR (B AND S);
+    Z <= (X AND (NOT S)) OR (Y AND S);
 END RTL;
