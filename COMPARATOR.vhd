@@ -3,7 +3,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity COMPARATOR is
-	generic ( N : NATURAL := 8);
+	generic ( N : NATURAL);
 	port (
 		X : in std_logic_vector(N - 1 downto 0);
 		Y : in std_logic_vector(N - 1 downto 0);
@@ -14,7 +14,7 @@ end COMPARATOR;
 
 architecture STRUCT of COMPARATOR is
 	component RIPPLE_CARRY_ADDER is
-		generic (N : NATURAL);
+		generic (N : NATURAL := N);
 		port (
 			X: in std_logic_vector(N - 1 downto 0);
 			Y: in std_logic_vector(N - 1 downto 0);
@@ -25,7 +25,7 @@ architecture STRUCT of COMPARATOR is
 	end component;
 	
 	component CARRY_ADDER is
-		generic (N : NATURAL);
+		generic (N : NATURAL := N);
 		port (
 			X : in std_logic_vector(N - 1 downto 0);
 			CIN : in std_logic;
@@ -35,7 +35,7 @@ architecture STRUCT of COMPARATOR is
 	end component;
 	
 	component MULTIPLEXER_N is
-        generic (N : NATURAL := 8);
+        generic (N : NATURAL := N);
         port ( 
             X : in  std_logic_vector(N - 1 downto 0);
             Y : in  std_logic_vector(N - 1 downto 0);

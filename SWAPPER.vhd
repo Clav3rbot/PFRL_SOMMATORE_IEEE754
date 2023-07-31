@@ -59,7 +59,7 @@ begin
 	);
 	
 	XMGYM <= '1' when MantComp = '0' else '0';
-	XMGYM <= '1' when MantComp = '1' else '0';
+	XMSYM <= '1' when MantComp = '1' else '0';
 	
 	isExpDiff0 <= '1' when EDiff = "00000000" else '0';
 	notExpDiff0 <= '1' when not EDiff = "00000000" else '0';
