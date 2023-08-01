@@ -4,7 +4,7 @@ USE IEEE.STD_LOGIC_1164.ALL;
 
 -- Ripple-carry adder entity
 ENTITY RIPPLE_CARRY_ADDER IS
-    GENERIC (N : NATURAL := 8);
+    GENERIC (N : NATURAL);
     PORT (
         X : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
         Y : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);

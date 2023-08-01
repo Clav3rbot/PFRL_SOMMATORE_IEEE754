@@ -3,7 +3,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 entity COMPARATOR is
-	generic ( N : NATURAL);
+	generic (N : NATURAL);
 	port (
 		X : in std_logic_vector(N - 1 downto 0);
 		Y : in std_logic_vector(N - 1 downto 0);
@@ -45,31 +45,39 @@ architecture STRUCT of COMPARATOR is
     end component;
     
 	signal S    : std_logic_vector(N - 1 downto 0);
+	signal S2 : std_logic_vector(N - 1 downto 0);
 	signal NOTS : std_logic_vector(N - 1 downto 0);
 	signal COUT : std_logic;
+	signal NOTY : std_logic_vector(N - 1 downto 0);
+	signal NotCout: std_logic;
 	
 begin
 
+	NOTY <= not Y;
+	
 	U1 :  RIPPLE_CARRY_ADDER port map (
 		X => X,
-      Y => not Y,
+      Y => NOTY,
       CIN => '1',
       S => S,
       COUT => COUT
     );
 	 
 	C <= not COUT;
+	NOTS <= not S;
 
 	U2: CARRY_ADDER port map(
-		X => not S,
+		X => NOTS,
 		CIN => '1',
-		S => NOTS
+		S => S2
 	);
+	
+	NotCout <= not COUT;
 	 
 	U3: MULTIPLEXER_N port map(	 
         X => S,
-        Y => NOTS,
-        S => not COUT,
+        Y => S2,
+        S => NotCout,
         Z => DIFF
 	);
 
