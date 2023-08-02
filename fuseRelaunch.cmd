@@ -1,1 +1,1 @@
--intstyle "ise" -incremental -lib "secureip" -o "/home/andrea/PFRL_SOMMATORE_IEEE754/TB_SWAPPER_isim_par.exe" -prj "/home/andrea/PFRL_SOMMATORE_IEEE754/TB_SWAPPER_par.prj" "work.TB_SWAPPER" 
+-intstyle "ise" -incremental -lib "secureip" -o "/home/andrea/PFRL_SOMMATORE_IEEE754/TB_PRE_SUM_isim_par.exe" -prj "/home/andrea/PFRL_SOMMATORE_IEEE754/TB_PRE_SUM_par.prj" "work.TB_PRE_SUM" 
