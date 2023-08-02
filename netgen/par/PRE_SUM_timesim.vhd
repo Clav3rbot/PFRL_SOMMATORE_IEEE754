@@ -7,14 +7,14 @@
 -- \   \   \/     Version: P.20131013
 --  \   \         Application: netgen
 --  /   /         Filename: PRE_SUM_timesim.vhd
--- /___/   /\     Timestamp: Wed Aug  2 12:50:38 2023
+-- /___/   /\     Timestamp: Wed Aug  2 15:24:29 2023
 -- \   \  /  \ 
 --  \___\/\___\
 --             
 -- Command	: -intstyle ise -s 4 -pcf PRE_SUM.pcf -rpw 100 -tpw 0 -ar Structure -tm PRE_SUM -insert_pp_buffers true -w -dir netgen/par -ofmt vhdl -sim PRE_SUM.ncd PRE_SUM_timesim.vhd 
 -- Device	: 6slx75tfgg676-4 (PRODUCTION 1.23 2013-10-13)
 -- Input file	: PRE_SUM.ncd
--- Output file	: /home/andrea/PFRL_SOMMATORE_IEEE754/netgen/par/PRE_SUM_timesim.vhd
+-- Output file	: /home/domenico/Scrivania/prog/PFRL_SOMMATORE_IEEE754/netgen/par/PRE_SUM_timesim.vhd
 -- # of Entities	: 1
 -- Design Name	: PRE_SUM
 -- Xilinx	: /opt/Xilinx/14.7/ISE_DS/ISE/

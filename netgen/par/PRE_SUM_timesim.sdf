@@ -1,7 +1,7 @@
 (DELAYFILE
   (SDFVERSION "3.0")
   (DESIGN "PRE_SUM")
-  (DATE "Wed Aug  2 12:50:38 2023")
+  (DATE "Wed Aug  2 15:24:29 2023")
   (VENDOR "Xilinx")
   (PROGRAM "Xilinx SDF Writer")
   (VERSION "P.20131013")
