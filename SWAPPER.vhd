@@ -47,9 +47,9 @@ BEGIN
 
     PROCESS (ExpComp, MantComp, A, B)
     BEGIN
-        -- Se ExpComp è 1, si fa lo swap
-        -- Se ExpComp è 0 e MantComp è 1, swap basato sul confronto delle mantisse
-        -- Se ExpComp è 0 e MantComp è 0, nessuno swap
+        -- Se ExpComp è 1, si fa lo Swap
+        -- Se ExpComp è 0 e EDiff è 0 e MantComp è 1, si fa lo Swap
+        -- Se ExpComp è 0 e EDiff è 0 e MantComp è 0, nessuno Swap
         IF (ExpComp = '1') OR (ExpComp = '0' AND (EDiff = "00000000") AND MantComp = '1') THEN
 
             G <= B;
@@ -63,6 +63,4 @@ BEGIN
     END PROCESS;
 
     DIFF <= EDiff;
-
-    -- propago il segno del piu grande e genero un segnale che dice se devo fare addizzione e sottrazione, se sottrazione faccio c2 del numero minore
 END STRUCT;
