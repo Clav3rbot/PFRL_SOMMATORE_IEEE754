@@ -39,6 +39,7 @@
 *_pad.csv
 *_pad.txt
 *_par.xrpt
+*.wdb
 *_summary.html
 *_summary.xml
 *_usage.xml
