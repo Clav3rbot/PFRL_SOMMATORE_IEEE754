@@ -1,1 +1,0 @@
--intstyle "ise" -incremental -lib "secureip" -o "/home/domenico/Scrivania/prog/PFRL_SOMMATORE_IEEE754/TB_PRE_SUM_isim_par.exe" -prj "/home/domenico/Scrivania/prog/PFRL_SOMMATORE_IEEE754/TB_PRE_SUM_par.prj" "work.TB_PRE_SUM" 
