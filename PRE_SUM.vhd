@@ -71,7 +71,7 @@ BEGIN
 	XMAN <= '1' & GNumber(22 downto 0);
 	
 	U2: RIGHT_SHIFTER port map (
-		X => '1' & Y(22 downto 0),
+		X => '1' & SNumber(22 downto 0),
 		S => ExpDiff,
 		Y => MantShift
 	);
