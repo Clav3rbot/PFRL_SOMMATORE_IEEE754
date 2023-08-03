@@ -45,7 +45,7 @@ BEGIN
         C => MantComp
     );
 
-    PROCESS (ExpComp, MantComp, A, B)
+    PROCESS (EDiff, ExpComp, MantComp, A, B)
     BEGIN
         -- Se ExpComp è 1, si fa lo Swap
         -- Se ExpComp è 0 e EDiff è 0 e MantComp è 1, si fa lo Swap
