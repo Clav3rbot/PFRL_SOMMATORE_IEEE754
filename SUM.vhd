@@ -41,7 +41,26 @@ ARCHITECTURE RTL OF SUM IS
 	SIGNAL OperationLogic : STD_LOGIC;
 	SIGNAL C2Mant : STD_LOGIC_VECTOR(23 DOWNTO 0);
 
-BEGIN
+	OperationLogic <= XSIGN xor YSIGN;
+	
+	U1: CONDITIONAL_C2
+		generic map(N => 24)
+		port map(
+			X => YMAN,
+			S => OperationLogic,
+			Z => C2Mant,
+			COUT => COUT -- importante ! se = 1 => bisogna incrementare l'esponente
+		);
+		
+	U2: RIPPLE_CARRY_ADDER
+		generic map(N => 24)
+		port map(
+			X => XMAN,
+			Y => C2Mant,
+			CIN => '0',
+			S => S,
+			COUT => COUT
+		);
 
 	OperationLogic <= XSIGN XOR YSIGN;
 
