@@ -6,12 +6,10 @@ ENTITY SUM IS
 	PORT (
 		XSIGN : IN STD_LOGIC;
 		YSIGN : IN STD_LOGIC;
-		XEXP : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
 		XMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
 		YMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
-		ZSIGN : OUT STD_LOGIC;
-		ZEXP : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+		ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+		EXPINCR : OUT STD_LOGIC
 	);
 END SUM;
 
@@ -43,25 +41,24 @@ ARCHITECTURE RTL OF SUM IS
 
 BEGIN
 
-	OperationLogic <= XSIGN XOR YSIGN;
-
-	U1 : CONDITIONAL_C2
-	GENERIC MAP(N => 24)
-	PORT MAP(
-		X => YMAN,
-		S => OperationLogic,
-		Z => C2Mant,
-		COUT => COUT
-	);
-
-	U2 : RIPPLE_CARRY_ADDER
-	GENERIC MAP(N => 24)
-	PORT MAP(
-		X => XMAN,
-		Y => C2Mant,
-		CIN => '0',
-		S => S,
-		COUT => COUT
-	);
+	OperationLogic <= XSIGN xor YSIGN;
+	
+	U1: CONDITIONAL_C2
+		generic map(N => 24)
+		port map(
+			X => YMAN,
+			S => OperationLogic,
+			Z => C2Mant
+		);
+		
+	U2: RIPPLE_CARRY_ADDER
+		generic map(N => 24)
+		port map(
+			X => XMAN,
+			Y => C2Mant,
+			CIN => '0',
+			S => ZMant,
+			COUT => ExpIncr -- importante ! se = 1 => bisogna incrementare l'esponente
+		);
 
 END RTL;
