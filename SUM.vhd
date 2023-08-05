@@ -6,12 +6,10 @@ ENTITY SUM IS
 	PORT (
 		XSIGN : IN STD_LOGIC;
 		YSIGN : IN STD_LOGIC;
-		XEXP : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
 		XMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
 		YMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
-		ZSIGN : OUT STD_LOGIC;
-		ZEXP : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+		ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+		EXPINCR : OUT STD_LOGIC
 	);
 END SUM;
 
@@ -41,6 +39,8 @@ ARCHITECTURE RTL OF SUM IS
 	SIGNAL OperationLogic : STD_LOGIC;
 	SIGNAL C2Mant : STD_LOGIC_VECTOR(23 DOWNTO 0);
 
+BEGIN
+
 	OperationLogic <= XSIGN xor YSIGN;
 	
 	U1: CONDITIONAL_C2
@@ -48,8 +48,7 @@ ARCHITECTURE RTL OF SUM IS
 		port map(
 			X => YMAN,
 			S => OperationLogic,
-			Z => C2Mant,
-			COUT => COUT -- importante ! se = 1 => bisogna incrementare l'esponente
+			Z => C2Mant
 		);
 		
 	U2: RIPPLE_CARRY_ADDER
@@ -58,29 +57,8 @@ ARCHITECTURE RTL OF SUM IS
 			X => XMAN,
 			Y => C2Mant,
 			CIN => '0',
-			S => S,
-			COUT => COUT
+			S => ZMant,
+			COUT => ExpIncr -- importante ! se = 1 => bisogna incrementare l'esponente
 		);
-
-	OperationLogic <= XSIGN XOR YSIGN;
-
-	U1 : CONDITIONAL_C2
-	GENERIC MAP(N => 24)
-	PORT MAP(
-		X => YMAN,
-		S => OperationLogic,
-		Z => C2Mant,
-		COUT => COUT
-	);
-
-	U2 : RIPPLE_CARRY_ADDER
-	GENERIC MAP(N => 24)
-	PORT MAP(
-		X => XMAN,
-		Y => C2Mant,
-		CIN => '0',
-		S => S,
-		COUT => COUT
-	);
 
 END RTL;
