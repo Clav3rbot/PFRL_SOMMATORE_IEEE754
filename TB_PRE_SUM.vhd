@@ -118,6 +118,5 @@ BEGIN
 		wait;
     END process;
 
-        END PROCESS;
 
 END;
