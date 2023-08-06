@@ -66,6 +66,13 @@ BEGIN
                 XMAN <= "100000000000000000000001";
                 YMAN <= "100000000000000000000001";
 					 
+					 WAIT FOR 50 ns;
+					 
+					 XSIGN <= '1';
+                YSIGN <= '0';
+                XMAN <= "100000000010100100000001";
+                YMAN <= "000110000000010000000001";
+					 
                 WAIT;
         END PROCESS tb;
         --  End Test Bench 
