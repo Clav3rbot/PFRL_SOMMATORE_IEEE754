@@ -38,6 +38,7 @@ ARCHITECTURE RTL OF SUM IS
 
 	SIGNAL OperationLogic : STD_LOGIC;
 	SIGNAL C2Mant : STD_LOGIC_VECTOR(23 DOWNTO 0);
+	SIGNAL SumCarry : STD_LOGIC;
 
 BEGIN
 
@@ -58,7 +59,9 @@ BEGIN
 			Y => C2Mant,
 			CIN => '0',
 			S => ZMant,
-			COUT => ExpIncr -- importante ! se = 1 => bisogna incrementare l'esponente
+			COUT => SumCarry -- importante ! se = 1 => bisogna incrementare l'esponente
 		);
+	
+	ExpIncr <= SumCarry and (not OperationLogic);
 
 END RTL;

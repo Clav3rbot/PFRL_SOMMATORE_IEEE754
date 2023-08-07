@@ -1,26 +1,27 @@
 Release 14.7 - netgen P.20131013 (lin64)
 Copyright (c) 1995-2013 Xilinx, Inc.  All rights reserved.
 
-Command Line: netgen -intstyle ise -s 4 -pcf SUM.pcf -rpw 100 -tpw 0 -ar
-Structure -tm SUM -insert_pp_buffers true -w -dir netgen/par -ofmt vhdl -sim
-SUM.ncd SUM_timesim.vhd  
+Command Line: netgen -intstyle ise -s 4 -pcf LEFT_SHIFTER.pcf -rpw 100 -tpw 0
+-ar Structure -tm LEFT_SHIFTER -insert_pp_buffers true -w -dir netgen/par -ofmt
+vhdl -sim LEFT_SHIFTER.ncd LEFT_SHIFTER_timesim.vhd  
 
-Read and Annotate design 'SUM.ncd' ...
+Read and Annotate design 'LEFT_SHIFTER.ncd' ...
 Loading device for application Rf_Device from file '6slx75t.nph' in environment
 /opt/Xilinx/14.7/ISE_DS/ISE/.
-   "SUM" is an NCD, version 3.2, device xc6slx75t, package fgg676, speed -4
-Loading constraints from 'SUM.pcf'...
+   "LEFT_SHIFTER" is an NCD, version 3.2, device xc6slx75t, package fgg676,
+speed -4
+Loading constraints from 'LEFT_SHIFTER.pcf'...
 The speed grade (-4) differs from the speed grade specified in the .ncd file
 (-4).
-The number of routable networks is 133
+The number of routable networks is 102
 Flattening design ...
 Processing design ... 
   Preping design's networks ...
   Preping design's macros ...
 Writing VHDL netlist
-'/home/andrea/PFRL_SOMMATORE_IEEE754/netgen/par/SUM_timesim.vhd' ...
+'/home/andrea/PFRL_SOMMATORE_IEEE754/netgen/par/LEFT_SHIFTER_timesim.vhd' ...
 Writing VHDL SDF file
-'/home/andrea/PFRL_SOMMATORE_IEEE754/netgen/par/SUM_timesim.sdf' ...
+'/home/andrea/PFRL_SOMMATORE_IEEE754/netgen/par/LEFT_SHIFTER_timesim.sdf' ...
 INFO:NetListWriters:635 - The generated VHDL netlist contains Xilinx SIMPRIM
    simulation primitives and has to be used with SIMPRIM library for correct
    compilation and simulation. 
@@ -32,4 +33,4 @@ INFO:NetListWriters:665 - For more information on how to pass the SDF switches
    to the simulator, see your Simulator tool documentation.
 Number of warnings: 0
 Number of info messages: 3
-Total memory usage is 518916 kilobytes
+Total memory usage is 518548 kilobytes
