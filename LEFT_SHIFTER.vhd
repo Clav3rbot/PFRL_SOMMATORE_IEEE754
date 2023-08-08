@@ -11,7 +11,7 @@ ENTITY LEFT_SHIFTER IS
     );
 END LEFT_SHIFTER;
 
--- Right shifter architecture
+-- Left shifter architecture
 ARCHITECTURE Behavioral OF LEFT_SHIFTER IS
 
     SIGNAL firstLevel : STD_LOGIC_VECTOR(23 DOWNTO 0) := (OTHERS => '0');

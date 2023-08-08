@@ -6,10 +6,11 @@ ENTITY SUM IS
 	PORT (
 		XSIGN : IN STD_LOGIC;
 		YSIGN : IN STD_LOGIC;
+		XEXP : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
 		XMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
 		YMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
 		ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
-		EXPINCR : OUT STD_LOGIC
+		XEXP_OUT : OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
 	);
 END SUM;
 
@@ -35,33 +36,51 @@ ARCHITECTURE RTL OF SUM IS
 			COUT : OUT STD_LOGIC
 		);
 	END COMPONENT;
+	
+	COMPONENT CARRY_ADDER IS
+			GENERIC (N : NATURAL);
+			PORT (
+				X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+				CIN : IN STD_LOGIC;
+				S : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+				COUT : OUT STD_LOGIC
+			);
+		END COMPONENT;
 
 	SIGNAL OperationLogic : STD_LOGIC;
 	SIGNAL C2Mant : STD_LOGIC_VECTOR(23 DOWNTO 0);
 	SIGNAL SumCarry : STD_LOGIC;
+	SIGNAL ExpIncr : STD_LOGIC;
 
 BEGIN
 
-	OperationLogic <= XSIGN xor YSIGN;
-	
-	U1: CONDITIONAL_C2
-		generic map(N => 24)
-		port map(
-			X => YMAN,
-			S => OperationLogic,
-			Z => C2Mant
-		);
-		
-	U2: RIPPLE_CARRY_ADDER
-		generic map(N => 24)
-		port map(
-			X => XMAN,
-			Y => C2Mant,
-			CIN => '0',
-			S => ZMant,
-			COUT => SumCarry -- importante ! se = 1 => bisogna incrementare l'esponente
-		);
-	
-	ExpIncr <= SumCarry and (not OperationLogic);
+	OperationLogic <= XSIGN XOR YSIGN;
 
+	U1 : CONDITIONAL_C2
+	GENERIC MAP(N => 24)
+	PORT MAP(
+		X => YMAN,
+		S => OperationLogic,
+		Z => C2Mant
+	);
+
+	U2 : RIPPLE_CARRY_ADDER
+	GENERIC MAP(N => 24)
+	PORT MAP(
+		X => XMAN,
+		Y => C2Mant,
+		CIN => '0',
+		S => ZMant,
+		COUT => SumCarry -- importante ! se = 1 => bisogna incrementare l'esponente
+	);
+	
+	ExpIncr <= SumCarry AND (NOT OperationLogic);
+	
+	U3 : CARRY_ADDER
+	GENERIC MAP (N => 8)
+	PORT MAP(
+		X => XEXP,
+		CIN => ExpIncr,
+		S => XEXP_OUT
+	);
 END RTL;

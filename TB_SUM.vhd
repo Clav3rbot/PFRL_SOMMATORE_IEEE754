@@ -9,72 +9,79 @@ END TB_SUM;
 
 ARCHITECTURE behavior OF TB_SUM IS
 
-        -- Component Declaration
-        COMPONENT SUM
-                PORT (
-                        XSIGN : IN STD_LOGIC;
-                        YSIGN : IN STD_LOGIC;
-                        XMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
-                        YMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
-                        ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
-                        EXPINCR : OUT STD_LOGIC
-                );
-        END COMPONENT;
+	-- Component Declaration
+	COMPONENT SUM
+		PORT (
+			XSIGN : IN STD_LOGIC;
+			YSIGN : IN STD_LOGIC;
+			XEXP : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+			XMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
+			YMAN : IN STD_LOGIC_VECTOR (23 DOWNTO 0);
+			ZMANT : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+			XEXP_OUT : OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
+		);
+	END COMPONENT;
 
-        --Inputs
-        SIGNAL XSIGN : STD_LOGIC;
-        SIGNAL YSIGN : STD_LOGIC;
-        SIGNAL XMAN : STD_LOGIC_VECTOR (23 DOWNTO 0);
-        SIGNAL YMAN : STD_LOGIC_VECTOR (23 DOWNTO 0);
+	--Inputs
+	SIGNAL XSIGN : STD_LOGIC;
+	SIGNAL YSIGN : STD_LOGIC;
+	SIGNAL XEXP : STD_LOGIC_VECTOR (7 DOWNTO 0);
+	SIGNAL XMAN : STD_LOGIC_VECTOR (23 DOWNTO 0);
+	SIGNAL YMAN : STD_LOGIC_VECTOR (23 DOWNTO 0);
 
-        --Outputs
-        SIGNAL ZMANT : STD_LOGIC_VECTOR(23 DOWNTO 0);
-        SIGNAL EXPINCR : STD_LOGIC;
+	--Outputs
+	SIGNAL ZMANT : STD_LOGIC_VECTOR(23 DOWNTO 0);
+	SIGNAL XEXP_OUT : STD_LOGIC_VECTOR (7 DOWNTO 0);
 
 BEGIN
 
-        -- Component Instantiation
-        uut : SUM PORT MAP(
-                XSIGN => XSIGN,
-                YSIGN => YSIGN,
-                XMAN => XMAN,
-                YMAN => YMAN,
-                ZMANT => ZMANT,
-                EXPINCR => EXPINCR
-        );
-        --  Test Bench Statements
-        tb : PROCESS
-        BEGIN
-                WAIT FOR 100 ns;
-					 
-                XSIGN <= '0';
-                YSIGN <= '0';
-                XMAN <= "100000001000000000000000";
-                YMAN <= "000000010000000000000000";
-					 
-					 WAIT FOR 50 ns;
-					 
-					 XSIGN <= '0';
-                YSIGN <= '1';
-                XMAN <= "100000001000000000000000";
-                YMAN <= "000000010000000000000000";
-					 
-					 WAIT FOR 50 ns;
-					 
-					 XSIGN <= '0';
-                YSIGN <= '0';
-                XMAN <= "100000000000000000000001";
-                YMAN <= "100000000000000000000001";
-					 
-					 WAIT FOR 50 ns;
-					 
-					 XSIGN <= '1';
-                YSIGN <= '0';
-                XMAN <= "100000000010100100000001";
-                YMAN <= "000110000000010000000001";
-					 
-                WAIT;
-        END PROCESS tb;
-        --  End Test Bench 
+	-- Component Instantiation
+	uut : SUM PORT MAP(
+		XSIGN => XSIGN,
+		YSIGN => YSIGN,
+		XEXP => XEXP,
+		XMAN => XMAN,
+		YMAN => YMAN,
+		ZMANT => ZMANT,
+		XEXP_OUT => XEXP_OUT
+	);
+	--  Test Bench Statements
+	tb : PROCESS
+	BEGIN
+		WAIT FOR 100 ns;
+
+		XSIGN <= '0';
+		YSIGN <= '0';
+		XEXP <= "00000000";
+		XMAN <= "100000001000000000000000";
+		YMAN <= "000000010000000000000000";
+
+		WAIT FOR 50 ns;
+
+		XSIGN <= '0';
+		YSIGN <= '1';
+		XEXP <= "00000000";
+		XMAN <= "100000001000000000000000";
+		YMAN <= "000000010000000000000000";
+
+		WAIT FOR 50 ns;
+
+		XSIGN <= '0';
+		YSIGN <= '0';
+		XEXP <= "00000001";
+		XMAN <= "100000000000000000000001";
+		YMAN <= "100000000000000000000001";
+
+		WAIT FOR 50 ns;
+
+		XSIGN <= '1';
+		YSIGN <= '0';
+		XEXP <= "00100000";
+		XMAN <= "100000000010100100000001";
+		YMAN <= "000110000000010000000001";
+
+		WAIT;
+	END PROCESS tb;
+	--  End Test Bench 
 
 END;

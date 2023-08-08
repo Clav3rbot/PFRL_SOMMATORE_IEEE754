@@ -1,0 +1,106 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+
+ENTITY NORMALIZER IS
+	PORT (
+		EXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+		MAN : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+		NEXP : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+		NMAN : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+	);
+END NORMALIZER;
+
+ARCHITECTURE RTL OF NORMALIZER IS
+
+	-- Ci dice la posizione dell'1 più significativo
+	COMPONENT PRIORITY_ENCODER
+		PORT (
+			X : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+			SHIFT : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+		);
+	END COMPONENT;
+	-- Shifter a sinistra di tante posizioni quanto l'output del modulo PRIORITY_ENCODER
+	COMPONENT LEFT_SHIFTER
+		PORT (
+			X : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+			S : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+			Y : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+		);
+	END COMPONENT;
+
+	-- Decrementare l'esponente
+	COMPONENT RIPPLE_CARRY_ADDER
+
+		GENERIC (N : NATURAL);
+
+		PORT (
+			X : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
+			Y : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
+			CIN : IN STD_LOGIC;
+			S : OUT STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
+			COUT : OUT STD_LOGIC
+
+		);
+	END COMPONENT;
+
+	-- Ci dice se possiamo fare la differenza
+	COMPONENT COMPARATOR IS
+
+		GENERIC (N : NATURAL);
+
+		PORT (
+			X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+			Y : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+			DIFF : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+			C : OUT STD_LOGIC
+		);
+	END COMPONENT;
+
+	SIGNAL ShiftPos : STD_LOGIC_VECTOR(7 DOWNTO 0);
+	SIGNAL ManShift : STD_LOGIC_VECTOR(23 DOWNTO 0);
+	SIGNAL ExpShift : STD_LOGIC_VECTOR(7 DOWNTO 0);
+	SIGNAL NotShiftPos : STD_LOGIC_VECTOR(7 DOWNTO 0);
+
+
+
+BEGIN
+	U1 : PRIORITY_ENCODER
+	PORT MAP(
+		X => MAN,
+		SHIFT => ShiftPos
+	);
+
+	U2 : LEFT_SHIFTER
+	PORT MAP(
+		X => MAN,
+		S => ShiftPos,
+		Y => ManShift
+	);
+
+	--U3 : COMPARATOR
+	--GENERIC MAP(N => 8)
+
+	--PORT MAP(
+		--X => X,
+		--Y => Y,
+		--DIFF => DIFF,
+		--C => C
+	--);
+	
+	NotShiftPos <= not ShiftPos;
+	
+	U4 : RIPPLE_CARRY_ADDER
+	GENERIC MAP(
+		N => 8
+	)
+
+	PORT MAP(
+		X => EXP,
+		Y => NotShiftPos,
+		CIN => '1',
+		S => ExpShift
+	);
+	NEXP <= ExpShift;
+	NMAN <= ManShift;
+
+END RTL;
