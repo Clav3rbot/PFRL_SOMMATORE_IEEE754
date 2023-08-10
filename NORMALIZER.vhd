@@ -6,7 +6,7 @@ ENTITY NORMALIZER IS
 		EXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 		MAN : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
 		NEXP : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-		NMAN : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+		NMAN : OUT STD_LOGIC_VECTOR(22 DOWNTO 0)
 	);
 END NORMALIZER;
 
@@ -19,12 +19,13 @@ ARCHITECTURE RTL OF NORMALIZER IS
 			SHIFT : OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
 		);
 	END COMPONENT;
+	
 	-- Shifter a sinistra di tante posizioni quanto l'output del modulo PRIORITY_ENCODER
 	COMPONENT LEFT_SHIFTER
 		PORT (
 			X : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
 			S : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-			Y : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+			Y : OUT STD_LOGIC_VECTOR(22 DOWNTO 0)
 		);
 	END COMPONENT;
 
@@ -42,26 +43,22 @@ ARCHITECTURE RTL OF NORMALIZER IS
 
 		);
 	END COMPONENT;
-
-	-- Ci dice se possiamo fare la differenza
-	COMPONENT COMPARATOR IS
-
-		GENERIC (N : NATURAL);
-
+	
+	COMPONENT MULTIPLEXER_N IS
+		GENERIC(N : NATURAL);
 		PORT (
-			X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-			Y : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-			DIFF : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-			C : OUT STD_LOGIC
-		);
-	END COMPONENT;
+        X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+        Y : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+        S : IN STD_LOGIC;
+        Z : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0)
+    );
+	END COMPONENT;	
 
 	SIGNAL ShiftPos : STD_LOGIC_VECTOR(7 DOWNTO 0);
-	SIGNAL ManShift : STD_LOGIC_VECTOR(23 DOWNTO 0);
+	SIGNAL ManShift : STD_LOGIC_VECTOR(22 DOWNTO 0);
 	SIGNAL ExpShift : STD_LOGIC_VECTOR(7 DOWNTO 0);
 	SIGNAL NotShiftPos : STD_LOGIC_VECTOR(7 DOWNTO 0);
-
-
+	SIGNAL AllZero : STD_LOGIC;
 
 BEGIN
 	U1 : PRIORITY_ENCODER
@@ -76,31 +73,37 @@ BEGIN
 		S => ShiftPos,
 		Y => ManShift
 	);
-
-	--U3 : COMPARATOR
-	--GENERIC MAP(N => 8)
-
-	--PORT MAP(
-		--X => X,
-		--Y => Y,
-		--DIFF => DIFF,
-		--C => C
-	--);
 	
 	NotShiftPos <= not ShiftPos;
 	
-	U4 : RIPPLE_CARRY_ADDER
+	U3 : RIPPLE_CARRY_ADDER
 	GENERIC MAP(
-		N => 8
+		N => 9
 	)
-
 	PORT MAP(
-		X => EXP,
-		Y => NotShiftPos,
+		X => '0' & EXP,
+		Y => '1' & NotShiftPos,
 		CIN => '1',
-		S => ExpShift
+		S(7 downto 0) => ExpShift,
+		S(8) => AllZero
 	);
-	NEXP <= ExpShift;
-	NMAN <= ManShift;
+	
+	U4: MULTIPLEXER_N
+	GENERIC MAP(N => 8)
+	PORT MAP(
+		X => ExpShift,
+		Y => (others => '0'),
+		S => AllZero,
+		Z => NEXP
+	);
+	
+	U5: MULTIPLEXER_N
+	GENERIC MAP(N => 23)
+	PORT MAP(
+		X => ManShift,
+		Y => (others => '0'),
+		S => AllZero,
+		Z => NMAN
+	);
 
 END RTL;

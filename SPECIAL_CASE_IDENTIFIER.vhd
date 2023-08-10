@@ -6,6 +6,7 @@ ENTITY SPECIAL_CASE_IDENTIFIER IS
     PORT (
         X     : IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
         Y     : IN  STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  SPECIAL : OUT STD_LOGIC;
         XCASE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
         YCASE : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
     );
@@ -27,6 +28,9 @@ ARCHITECTURE Behavioral OF SPECIAL_CASE_IDENTIFIER IS
     SIGNAL YExponent255 : STD_LOGIC;
     SIGNAL YExponent0   : STD_LOGIC;
     SIGNAL YMantissa0   : STD_LOGIC;
+	 
+	 SIGNAL CaseX : STD_LOGIC_VECTOR(2 downto 0);
+	 SIGNAL CaseY : STD_LOGIC_VECTOR(2 downto 0);
 
 BEGIN
     XExponent255 <= '1' WHEN X(30 DOWNTO 23) = "11111111" ELSE
@@ -43,15 +47,21 @@ BEGIN
     YMantissa0   <= '1' WHEN Y(22 DOWNTO 0) = "00000000000000000000000" ELSE
         '0';
 
-    XCase <= "000" WHEN XExponent0 = '1' AND XMantissa0 = '1' ELSE -- Zero
+    CaseX <= "000" WHEN XExponent0 = '1' AND XMantissa0 = '1' ELSE -- Zero
 				 "001" WHEN X(31) = '0' AND XExponent255 = '1' AND XMantissa0 = '1' ELSE -- + Infinity
              "010" WHEN X(31) = '1' AND XExponent255 = '1' AND XMantissa0 = '1' ELSE -- - Infinity
              "011" WHEN XExponent255 = '1' AND NOT XMantissa0 = '1' ELSE -- NaN
 		       "100";
 
-    YCase <= "000" WHEN YExponent0 = '1' AND YMantissa0 = '1' ELSE -- Zero
+    CaseY <= "000" WHEN YExponent0 = '1' AND YMantissa0 = '1' ELSE -- Zero
              "001" WHEN Y(31) = '0' AND YExponent255 = '1' AND YMantissa0 = '1' ELSE -- + Infinity
              "010" WHEN Y(31) = '1' AND YExponent255 = '1' AND YMantissa0 = '1' ELSE -- - Infinity
              "011" WHEN YExponent255 = '1' AND NOT YMantissa0 = '1' ELSE -- NaN
 		       "100";
+				 
+	XCASE <= CaseX;
+	YCASE <= CaseY;
+				 
+	SPECIAL <= '0' when (CaseX(2) and CaseY(2)) = '1' else '1';
+	
 END Behavioral;
