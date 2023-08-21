@@ -9,20 +9,20 @@ ARCHITECTURE behavior OF TB_NORMALIZER IS
     COMPONENT NORMALIZER
     PORT(
          EXP : IN  std_logic_vector(7 downto 0);
-         MAN : IN  std_logic_vector(23 downto 0);
+         MAN : IN  std_logic_vector(26 downto 0);
          NEXP : OUT  std_logic_vector(7 downto 0);
-         NMAN : OUT  std_logic_vector(22 downto 0)
+         NMAN : OUT  std_logic_vector(25 downto 0)
         );
     END COMPONENT;
     
 
    --Inputs
    signal EXP : std_logic_vector(7 downto 0);
-   signal MAN : std_logic_vector(23 downto 0);
+   signal MAN : std_logic_vector(26 downto 0);
 
  	--Outputs
    signal NEXP : std_logic_vector(7 downto 0);
-   signal NMAN : std_logic_vector(22 downto 0);
+   signal NMAN : std_logic_vector(25 downto 0);
  
 BEGIN
  
@@ -40,20 +40,25 @@ BEGIN
 	
       wait for 100 ns;	
 		EXP <= "00000000";
-	   MAN <= "000000000000000000000000";
+	   MAN <= "000000000000000000000000000";
 		
 		wait for 50 ns;	
 		EXP <= "00011000";
-	   MAN <= "000001000000000000100110";
+	   MAN <= "000001000000000000100110000";
 		
 		wait for 50 ns;
 		
 		EXP <= "00000010";
-	   MAN <= "000001000000000000100110";
+	   MAN <= "000001000000000000100110000";
 		
-
-      -- insert stimulus here 
-
+		wait for 50 ns;      
+      EXP <= "01010100";
+		MAN  <= "000000000000000000000011000";
+		
+		wait for 50 ns;      
+      EXP <= "01010101";
+		MAN  <= "000000000000000000000000000";
+		
       wait;
    end process;
 
