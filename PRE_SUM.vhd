@@ -10,8 +10,8 @@ ENTITY PRE_SUM IS
         XSIGN : OUT STD_LOGIC;
 		  YSIGN : OUT STD_LOGIC;
         XEXP : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
-        XMAN : OUT STD_LOGIC_VECTOR (23 DOWNTO 0);
-        YMAN : OUT STD_LOGIC_VECTOR (23 DOWNTO 0);
+        XMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
+        YMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
         XCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
         YCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
 		  SPECIAL : OUT STD_LOGIC
@@ -32,9 +32,9 @@ ARCHITECTURE RTL OF PRE_SUM IS
 	 
 	 COMPONENT RIGHT_SHIFTER is
 		port (
-			X : in std_logic_vector(23 downto 0);
+			X : in std_logic_vector(26 downto 0);
 			S : in std_logic_vector(7 downto 0);
-			Y : out std_logic_vector(23 downto 0)
+			Y : out std_logic_vector(26 downto 0)
 		);
 	 END COMPONENT;
 	 
@@ -52,7 +52,7 @@ ARCHITECTURE RTL OF PRE_SUM IS
 	 signal GNumber : std_logic_vector(31 downto 0);
 	 signal SNumber : std_logic_vector(31 downto 0);
 	 signal ExpDiff : std_logic_vector(7 downto 0);
-	 signal MantShift : Std_logic_vector(23 downto 0);
+	 signal MantShift : Std_logic_vector(26 downto 0);
 	 signal SC_XCase : std_logic_vector(2 downto 0);
 	 signal SC_YCase : std_logic_vector(2 downto 0);
 	 
@@ -70,10 +70,10 @@ BEGIN
 	XSIGN <= GNumber(31);
 	YSIGN <= SNumber(31);
 	XEXP <= GNumber(30 downto 23);
-	XMAN <= '1' & GNumber(22 downto 0);
+	XMAN <= '1' & GNumber(22 downto 0) & "000";
 	
 	U2: RIGHT_SHIFTER port map (
-		X => '1' & SNumber(22 downto 0),
+		X => '1' & SNumber(22 downto 0) & "000",
 		S => ExpDiff,
 		Y => MantShift
 	);
