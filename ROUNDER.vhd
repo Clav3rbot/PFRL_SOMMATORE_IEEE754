@@ -13,7 +13,7 @@ END ROUNDER;
 ARCHITECTURE Behavioral OF ROUNDER IS
 
     COMPONENT RIPPLE_CARRY_ADDER
-        GENERIC (N : NATURAL := N);
+        GENERIC (N : NATURAL);
         PORT (
             X : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
             Y : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
@@ -30,40 +30,42 @@ ARCHITECTURE Behavioral OF ROUNDER IS
         );
     END COMPONENT;
 
-    SIGNAL ManIncr : STD_LOGIC;
-    SIGNAL MZVec : STD_LOGIC_VECTOR(22 DOWNTO 0);
-    SIGNAL EZVec : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL MantIncr : STD_LOGIC;
+    SIGNAL ExtMant : STD_LOGIC_VECTOR(22 DOWNTO 0);
+    SIGNAL ExtExp: STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL TempMan : STD_LOGIC_VECTOR(22 DOWNTO 0);
     SIGNAL TempExp : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL MantAddOF : STD_LOGIC;
+    SIGNAL MantCarry : STD_LOGIC;
     SIGNAL ExpAddOF : STD_LOGIC;
 
-    -- Aumento la mantissa se necessario (indicato da ROUNDER_STD)
-    --MZVec 	<= "0000000000000000000000" & ManIncr;
-
-    -- Aumento l'esponente se c'è un overflow di mantissa
-    --EZVec 	<= "0000000" & MantAddOF;
-
-BEGIN
+    BEGIN
     U1 : ROUNDER_STD
     PORT MAP(
         LAST4 => ZMAN(3 DOWNTO 0),
-        INCR => ManIncr
+        INCR => MantIncr
     );
+	 
+	 -- Aumento la mantissa se necessario (indicato da ROUNDER_STD)
+    ExtMant 	<= "0000000000000000000000" & MantIncr;
+
     U2 : RIPPLE_CARRY_ADDER
     GENERIC MAP(N => 23)
     PORT MAP(
         X => ZMAN(25 DOWNTO 3),
-        Y => Y, --da controllare se aggiungere MZVec
+        Y => ExtMant,
         CIN => '0',
         S => TempMan,
-        COUT => MantAddOF
+        COUT => MantCarry
     );
+	 
+	 -- Aumento l'esponente se c'è un overflow di mantissa
+    ExtExp	<= "0000000" & MantCarry;
 
     U3 : RIPPLE_CARRY_ADDER
     GENERIC MAP( N => 8)
+	 port map(
         X => ZEXP,
-        Y => Y, --da controllare EZVec
+        Y => ExtExp,
         CIN => '0',
         S => TempExp,
         COUT => ExpAddOF
@@ -72,4 +74,5 @@ BEGIN
 
     -- isZero <= '1' when TempExp		= "00000000" or Man(26) = '0' else '0';
     -- isInfty 	<= '1' when ( TempE 	= "11111111" or ExpAddOF 	= '1' ) else '0';
+	 -- modificare questi due controlli, proponendo direttamente in uscita il risultato corretto
 END Behavioral;

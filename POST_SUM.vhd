@@ -57,6 +57,13 @@ ARCHITECTURE RTL OF POST_SUM IS
                 );
         END COMPONENT;
 
+        COMPONENT ROUNDER IS
+                PORT (
+                        ZEXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+                        ZMAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
+                        ZROUNDED : OUT STD_LOGIC_VECTOR(30 DOWNTO 0)
+                );
+        END COMPONENT;
         SIGNAL ExpIncr : STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL ExpNorm : STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL MantNorm : STD_LOGIC_VECTOR(22 DOWNTO 0);
@@ -81,6 +88,8 @@ BEGIN
                 Y => Y,
                 RESULT => SpecialResult
         );
+		  
+		  --invece che fare la somma e usare un mux, conviene sommare direttamente il bit
 
         U3 : CARRY_ADDER
         GENERIC MAP(N => 8)
@@ -118,5 +127,12 @@ BEGIN
                 S => SPECIAL,
                 Z => Z
         );
+
+        U7 : ROUNDER
+		  PORT MAP (
+			ZEXP => ZEXP,
+			ZMAN => ZMAN,
+			ZROUNDED => ZROUNDED
+		);
 
 END RTL;
