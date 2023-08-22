@@ -14,7 +14,6 @@ ARCHITECTURE Behavioral OF ROUNDER IS
 
     COMPONENT RIPPLE_CARRY_ADDER
         GENERIC (N : NATURAL := N);
-
         PORT (
             X : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
             Y : IN STD_LOGIC_VECTOR (N - 1 DOWNTO 0);
@@ -48,27 +47,28 @@ ARCHITECTURE Behavioral OF ROUNDER IS
 BEGIN
     U1 : ROUNDER_STD
     PORT MAP(
-        LAST4 => Man(3 DOWNTO 0),
+        LAST4 => ZMAN(3 DOWNTO 0),
         INCR => ManIncr
     );
     U2 : RIPPLE_CARRY_ADDER
     GENERIC MAP(N => 23)
     PORT MAP(
-        X => Man(25 DOWNTO 3),
+        X => ZMAN(25 DOWNTO 3),
         Y => Y, --da controllare se aggiungere MZVec
         CIN => '0',
-        S = TempMan,
+        S => TempMan,
         COUT => MantAddOF
     );
 
     U3 : RIPPLE_CARRY_ADDER
-    GENERIC MAP(
-        X => Exp,
+    GENERIC MAP( N => 8)
+        X => ZEXP,
         Y => Y, --da controllare EZVec
         CIN => '0',
         S => TempExp,
         COUT => ExpAddOF
     );
+	 ZROUNDED <= TempExp & TempMan;
 
     -- isZero <= '1' when TempExp		= "00000000" or Man(26) = '0' else '0';
     -- isInfty 	<= '1' when ( TempE 	= "11111111" or ExpAddOF 	= '1' ) else '0';
