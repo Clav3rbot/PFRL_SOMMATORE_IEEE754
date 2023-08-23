@@ -12,7 +12,7 @@ ENTITY POST_SUM IS
                 SPECIAL : IN STD_LOGIC;
                 XEXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
                 XEXP_INCR : IN STD_LOGIC;
-                MAN : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+                MAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
                 Z : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
         );
 END POST_SUM;
@@ -31,9 +31,9 @@ ARCHITECTURE RTL OF POST_SUM IS
         COMPONENT NORMALIZER IS
                 PORT (
                         EXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-                        MAN : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+                        MAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
                         NEXP : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-                        NMAN : OUT STD_LOGIC_VECTOR(22 DOWNTO 0)
+                        NMAN : OUT STD_LOGIC_VECTOR(25 DOWNTO 0)
                 );
         END COMPONENT;
 
@@ -66,9 +66,9 @@ ARCHITECTURE RTL OF POST_SUM IS
         END COMPONENT;
         SIGNAL ExpIncr : STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL ExpNorm : STD_LOGIC_VECTOR(7 DOWNTO 0);
-        SIGNAL MantNorm : STD_LOGIC_VECTOR(22 DOWNTO 0);
+        SIGNAL MantNorm : STD_LOGIC_VECTOR(25 DOWNTO 0);
         SIGNAL FinalExp : STD_LOGIC_VECTOR(7 DOWNTO 0);
-        SIGNAL FinalMant : STD_LOGIC_VECTOR(22 DOWNTO 0);
+        SIGNAL FinalMant : STD_LOGIC_VECTOR(25 DOWNTO 0);
         SIGNAL SpecialResult : STD_LOGIC_VECTOR(31 DOWNTO 0);
         SIGNAL TempResult : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
@@ -109,30 +109,21 @@ BEGIN
         );
 
         U5 : MULTIPLEXER_N
-        GENERIC MAP(N => 23)
+        GENERIC MAP(N => 26)
         PORT MAP(
                 X => MantNorm,
-                Y => MAN(23 DOWNTO 1),
+                Y => MAN(26 DOWNTO 1),
                 S => XEXP_INCR,
                 Z => FinalMant
         );
-
-        TempResult <= XSIGN & FinalExp & FinalMant;
-
-        U6 : MULTIPLEXER_N
-        GENERIC MAP(N => 32)
-        PORT MAP(
-                X => TempResult,
-                Y => SpecialResult,
-                S => SPECIAL,
-                Z => Z
-        );
-
-        U7 : ROUNDER
+		  
+		  U6 : ROUNDER
 		  PORT MAP (
-			ZEXP => ZEXP,
-			ZMAN => ZMAN,
-			ZROUNDED => ZROUNDED
+			ZEXP => FinalExp,
+			ZMAN => FinalMant,
+			ZROUNDED => TempResult
 		);
+		  
+		  Z <= TempResult when SPECIAL = '0' else SpecialResult;
 
 END RTL;
