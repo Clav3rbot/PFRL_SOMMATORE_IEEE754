@@ -11,7 +11,7 @@ ARCHITECTURE behavior OF TB_NORMALIZER IS
          EXP : IN  std_logic_vector(7 downto 0);
          MAN : IN  std_logic_vector(26 downto 0);
          NEXP : OUT  std_logic_vector(7 downto 0);
-         NMAN : OUT  std_logic_vector(25 downto 0)
+         NMAN : OUT  std_logic_vector(26 downto 0)
         );
     END COMPONENT;
     
@@ -22,7 +22,7 @@ ARCHITECTURE behavior OF TB_NORMALIZER IS
 
  	--Outputs
    signal NEXP : std_logic_vector(7 downto 0);
-   signal NMAN : std_logic_vector(25 downto 0);
+   signal NMAN : std_logic_vector(26 downto 0);
  
 BEGIN
  

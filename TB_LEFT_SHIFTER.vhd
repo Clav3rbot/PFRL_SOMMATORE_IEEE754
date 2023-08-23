@@ -11,7 +11,7 @@ ARCHITECTURE behavior OF TB_LEFT_SHIFTER IS
     PORT(
          X : IN  std_logic_vector(26 downto 0);
          S : IN  std_logic_vector(7 downto 0);
-         Y : OUT  std_logic_vector(25 downto 0)
+         Y : OUT  std_logic_vector(26 downto 0)
         );
     END COMPONENT;
     
@@ -21,7 +21,7 @@ ARCHITECTURE behavior OF TB_LEFT_SHIFTER IS
    signal S : std_logic_vector(7 downto 0) := (others => '0');
 
  	--Outputs
-   signal Y : std_logic_vector(25 downto 0);
+   signal Y : std_logic_vector(26 downto 0);
  
 BEGIN
  
