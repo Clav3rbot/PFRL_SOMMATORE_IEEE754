@@ -11,7 +11,6 @@ ENTITY POST_SUM IS
                 YCASE : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
                 SPECIAL : IN STD_LOGIC;
                 XEXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-                XEXP_INCR : IN STD_LOGIC;
                 MAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
                 Z : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
         );
@@ -33,27 +32,7 @@ ARCHITECTURE RTL OF POST_SUM IS
                         EXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
                         MAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
                         NEXP : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-                        NMAN : OUT STD_LOGIC_VECTOR(25 DOWNTO 0)
-                );
-        END COMPONENT;
-
-        COMPONENT CARRY_ADDER IS
-                GENERIC (N : NATURAL);
-                PORT (
-                        X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-                        CIN : IN STD_LOGIC;
-                        S : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-                        COUT : OUT STD_LOGIC
-                );
-        END COMPONENT;
-
-        COMPONENT MULTIPLEXER_N IS
-                GENERIC (N : NATURAL);
-                PORT (
-                        X : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-                        Y : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-                        S : IN STD_LOGIC;
-                        Z : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0)
+                        NMAN : OUT STD_LOGIC_VECTOR(26 DOWNTO 0)
                 );
         END COMPONENT;
 
@@ -66,11 +45,9 @@ ARCHITECTURE RTL OF POST_SUM IS
         END COMPONENT;
         SIGNAL ExpIncr : STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL ExpNorm : STD_LOGIC_VECTOR(7 DOWNTO 0);
-        SIGNAL MantNorm : STD_LOGIC_VECTOR(25 DOWNTO 0);
-        SIGNAL FinalExp : STD_LOGIC_VECTOR(7 DOWNTO 0);
-        SIGNAL FinalMant : STD_LOGIC_VECTOR(25 DOWNTO 0);
+        SIGNAL MantNorm : STD_LOGIC_VECTOR(26 DOWNTO 0);
         SIGNAL SpecialResult : STD_LOGIC_VECTOR(31 DOWNTO 0);
-        SIGNAL TempResult : STD_LOGIC_VECTOR(31 DOWNTO 0);
+        SIGNAL TempResult : STD_LOGIC_VECTOR(30 DOWNTO 0);
 
 BEGIN
 
@@ -81,49 +58,22 @@ BEGIN
                 NMAN => MantNorm
         );
 
-        U2 : SPECIAL_CASE_HANDLER PORT MAP(
+        U2 : ROUNDER
+        PORT MAP(
+                ZEXP => ExpNorm,
+                ZMAN => MantNorm,
+                ZROUNDED => TempResult
+        );
+
+        U3 : SPECIAL_CASE_HANDLER PORT MAP(
                 CASEX => XCASE,
                 CASEY => YCASE,
                 X => X,
                 Y => Y,
                 RESULT => SpecialResult
         );
-		  
-		  --invece che fare la somma e usare un mux, conviene sommare direttamente il bit
 
-        U3 : CARRY_ADDER
-        GENERIC MAP(N => 8)
-        PORT MAP(
-                X => XEXP,
-                CIN => '1',
-                S => ExpIncr
-        );
-
-        U4 : MULTIPLEXER_N
-        GENERIC MAP(N => 8)
-        PORT MAP(
-                X => ExpNorm,
-                Y => ExpIncr,
-                S => XEXP_INCR,
-                Z => FinalExp
-        );
-
-        U5 : MULTIPLEXER_N
-        GENERIC MAP(N => 26)
-        PORT MAP(
-                X => MantNorm,
-                Y => MAN(26 DOWNTO 1),
-                S => XEXP_INCR,
-                Z => FinalMant
-        );
-		  
-		  U6 : ROUNDER
-		  PORT MAP (
-			ZEXP => FinalExp,
-			ZMAN => FinalMant,
-			ZROUNDED => TempResult
-		);
-		  
-		  Z <= TempResult when SPECIAL = '0' else SpecialResult;
+        Z <= (XSIGN & TempResult) WHEN SPECIAL = '0' ELSE
+                SpecialResult;
 
 END RTL;
