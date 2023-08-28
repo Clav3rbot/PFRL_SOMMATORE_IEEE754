@@ -37,11 +37,7 @@ ARCHITECTURE Behavioral OF ROUNDER IS
         SIGNAL TempExp : STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL MantCarry : STD_LOGIC;
         SIGNAL ExpCarry : STD_LOGIC;
-<<<<<<< HEAD
         --SIGNAL isZero : STD_LOGIC;
-=======
-        SIGNAL isZero : STD_LOGIC;
->>>>>>> main
         SIGNAL isInfty : STD_LOGIC;
 
 BEGIN
@@ -77,19 +73,9 @@ BEGIN
                 COUT => ExpCarry
         );
 
-<<<<<<< HEAD
         isInfty <= '1' WHEN (TempExp = "11111111" OR ExpCarry = '1') ELSE
                 '0';
 
         ZROUNDED <= ("11111111" & "00000000000000000000000") WHEN isInfty = '1' ELSE
-=======
-        isZero <= '1' WHEN (TempExp = "00000000" AND TempMan = "00000000000000000000000") ELSE
-                '0';
-        isInfty <= '1' WHEN (TempExp = "11111111" OR ExpCarry = '1') ELSE
-                '0';
-
-        ZROUNDED <= (OTHERS => '0') WHEN isZero = '1' ELSE
-                ("11111111" & "00000000000000000000000") WHEN isInfty = '1' ELSE
->>>>>>> main
                 TempExp & TempMan;
 END Behavioral;
