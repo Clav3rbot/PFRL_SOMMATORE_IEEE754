@@ -53,17 +53,11 @@ BEGIN
 	-- Stimulus process
 	PROCESS
 	BEGIN
-		wait for clk_period/4;
 		WAIT FOR CLK_period;
 		RST <= '1';
 		WAIT FOR CLK_period;
 		RST <= '0';
 
-		X <= "00000000000000000000000000000000";
-		Y <= "00000000000000000000000000000000";
-		SUB <= '0';
-
-		WAIT FOR CLK_period;
 		-- ordinary numbers (no special inputs or edge cases)
 
 		X <= "01000100101111100011011110101110"; -- 1521.739990234375
