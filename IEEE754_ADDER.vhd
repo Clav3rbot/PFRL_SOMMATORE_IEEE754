@@ -8,8 +8,9 @@ ENTITY IEEE754_ADDER IS
                 Y : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
                 OP : IN STD_LOGIC;
                 Z : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-                RST : IN STD_LOGIC;
-                CLK : IN STD_LOGIC
+                 
+					 CLK : IN STD_LOGIC;
+					 RST : IN STD_LOGIC
         );
 END IEEE754_ADDER;
 
@@ -112,6 +113,7 @@ BEGIN
                 MAN => r2_ZMANT,
                 Z => OUTPUT
         );
+		  Z <= rOUT_Z;
 
         CLOCK : PROCESS (CLK, RST)
         BEGIN
