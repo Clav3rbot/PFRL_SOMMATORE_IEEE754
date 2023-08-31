@@ -118,10 +118,12 @@ BEGIN
         CLOCK : PROCESS (CLK, RST)
         BEGIN
                 IF (RST = '1') THEN
+								
 								-- INPUT registers
 								rIN_X   <= (others => '0');
 								rIN_Y   <= (others => '0');
 								rIN_OP <= '0';
+								
                         -- Reset all registers
                         r_XSIGN <= '0';
                         r_YSIGN <= '0';

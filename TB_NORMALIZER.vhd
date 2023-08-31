@@ -37,12 +37,16 @@ BEGIN
    -- Stimulus process
    stim_proc: process
    begin
-	
-      wait for 100 ns;	
+		
 		EXP <= "00000000";
 	   MAN <= "000000000000000000000000000";
+		wait for 100 ns;
 		
-		wait for 50 ns;	
+		EXP <= "10001001";
+		MAN <= "000000000000000000000000000";
+		
+		wait for 50 ns;
+		
 		EXP <= "00011000";
 	   MAN <= "000001000000000000100110000";
 		
