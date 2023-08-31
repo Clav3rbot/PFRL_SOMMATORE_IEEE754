@@ -126,7 +126,7 @@ BEGIN
 		X <= "00000011000000000000000001110000"; -- 3.76163214517 * 10^-37
 		Y <= "00000011000000000000000011110000"; -- 3.76168954235 * 10^-37
 		SUB <= '1';
-
+		-- expected output: 10000000000000000001000000000000 - -5.74E-42 < ?
 		WAIT FOR CLK_period;
 
 		X <= "00000000100000000000000001110000"; -- 1.17551004537 * 10^-38
@@ -138,19 +138,24 @@ BEGIN
 		X <= "10000000011111111111111111111100"; -- normalized number
 		Y <= "00000000010000000000011000001101"; -- normalized number
 		SUB <= '0';
-
+		-- expected output : 10000000000000000000000010000000 -1.8E-43 
+		
+		
 		-- superior
 		WAIT FOR CLK_period;
 
 		X <= "01111111011111111111111111111100"; -- Big numb
 		Y <= "01111111000000000000011000001101"; -- Big numb
 		SUB <= '0';
+		-- expected output: 01111111100000000000000000000000 - inf
 
 		WAIT FOR CLK_period;
 
 		X <= "10000000000000000000000000000011"; -- normalized numeber
 		Y <= "11111111011111111111111111111111"; -- Not really infinity
 		SUB <= '0';
+		
+		-- expected output: 11111111011111111111111111111111 < ?
 
 		-- special numbers
 		-- infinity
@@ -159,21 +164,21 @@ BEGIN
 		X <= "01111111100000000000000000000000"; -- +inf
 		Y <= "01111111100000000000000000000000"; -- +inf
 		SUB <= '1';
-		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) at least one bit in the mantissa has to be 1
+		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) 
 
 		WAIT FOR CLK_period; -- -inf + inf
 
 		X <= "11111111100000000000000000000000"; -- -inf
 		Y <= "01111111100000000000000000000000"; -- +inf
 		SUB <= '0';
-		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) at least one bit in the mantissa has to be 1
+		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) 
 
 		WAIT FOR CLK_period; -- -inf - inf 
 
 		X <= "11111111100000000000000000000000"; -- -inf
 		Y <= "11111111100000000000000000000000"; -- -inf
 		SUB <= '0';
-		-- output should be 11111111100000000000000000000000 (-inf) ~ 4286578688
+		-- output should be 11111111100000000000000000000000 (-inf) 
 
 		WAIT FOR CLK_period; -- -inf - num
 
