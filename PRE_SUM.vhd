@@ -82,7 +82,7 @@ BEGIN
 
         U3 : SPECIAL_CASE_IDENTIFIER PORT MAP(
                 X => X(31 DOWNTO 0),
-                Y => Y(31 DOWNTO 0),
+                Y => YTemp(31 DOWNTO 0),
                 XCASE => SC_XCase,
                 YCASE => SC_YCase,
                 SPECIAL => SPECIAL
