@@ -12,9 +12,8 @@ ENTITY PRE_SUM IS
                 XEXP : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
                 XMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
                 YMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
-                XCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
-                YCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
-                SPECIAL : OUT STD_LOGIC
+                SPECIAL : OUT STD_LOGIC;
+                SPECIAL_RESULT : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
         );
 END PRE_SUM;
 
@@ -27,6 +26,16 @@ ARCHITECTURE RTL OF PRE_SUM IS
                         XCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
                         YCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
                         SPECIAL : OUT STD_LOGIC
+                );
+        END COMPONENT;
+
+        COMPONENT SPECIAL_CASE_HANDLER IS
+                PORT (
+                        CASEX : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+                        CASEY : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+                        X : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+                        Y : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+                        RESULT : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
                 );
         END COMPONENT;
 
@@ -88,6 +97,11 @@ BEGIN
                 SPECIAL => SPECIAL
         );
 
-        XCASE <= SC_XCase;
-        YCASE <= SC_YCase;
+        U4 : SPECIAL_CASE_HANDLER PORT MAP(
+                CASEX => SC_XCase,
+                CASEY => SC_YCase,
+                X => X(31 DOWNTO 0),
+                Y => YTemp(31 DOWNTO 0),
+                RESULT => SPECIAL_RESULT
+        );
 END RTL;

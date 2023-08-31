@@ -22,9 +22,8 @@ architecture Behavioral of IEEE754_ADDER_NP is
             XEXP : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
             XMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
             YMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
-            XCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
-            YCASE : OUT STD_LOGIC_VECTOR (2 DOWNTO 0);
-            SPECIAL : OUT STD_LOGIC
+            SPECIAL : OUT STD_LOGIC;
+				SPECIAL_RESULT : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -42,12 +41,9 @@ architecture Behavioral of IEEE754_ADDER_NP is
 
     COMPONENT POST_SUM
         PORT (
-            X : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            Y : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
             XSIGN : IN STD_LOGIC;
-            XCASE : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            YCASE : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
             SPECIAL : IN STD_LOGIC;
+				SPECIAL_RESULT : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
             XEXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
             MAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
             Z : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
@@ -58,7 +54,7 @@ architecture Behavioral of IEEE754_ADDER_NP is
     SIGNAL XSIGN, YSIGN, SPECIAL : STD_LOGIC;
     SIGNAL XEXP, XEXP_INCR : STD_LOGIC_VECTOR(7 DOWNTO 0);
     SIGNAL XMAN, YMAN, ZMANT : STD_LOGIC_VECTOR(26 DOWNTO 0);
-    SIGNAL XCASE, YCASE : STD_LOGIC_VECTOR(2 DOWNTO 0);
+	 SIGNAL SPECIAL_RESULT : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 begin
 
@@ -72,9 +68,8 @@ begin
         XEXP => XEXP,
         XMAN => XMAN,
         YMAN => YMAN,
-        XCASE => XCASE,
-        YCASE => YCASE,
-        SPECIAL => SPECIAL
+        SPECIAL => SPECIAL,
+		  SPECIAL_RESULT => SPECIAL_RESULT
     );
 
     U2: SUM
@@ -90,12 +85,9 @@ begin
 
     U3: POST_SUM
     PORT MAP(
-        X => X,
-        Y => Y,
         XSIGN => XSIGN,
-        XCASE => XCASE,
-        YCASE => YCASE,
         SPECIAL => SPECIAL,
+		  SPECIAL_RESULT => SPECIAL_RESULT,
         XEXP => XEXP_INCR,
         MAN => ZMANT,
         Z => Z
