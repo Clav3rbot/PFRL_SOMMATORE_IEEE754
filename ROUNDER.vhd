@@ -37,7 +37,6 @@ ARCHITECTURE Behavioral OF ROUNDER IS
         SIGNAL TempExp : STD_LOGIC_VECTOR(7 DOWNTO 0);
         SIGNAL MantCarry : STD_LOGIC;
         SIGNAL ExpCarry : STD_LOGIC;
-        --SIGNAL isZero : STD_LOGIC;
         SIGNAL isInfty : STD_LOGIC;
 
 BEGIN

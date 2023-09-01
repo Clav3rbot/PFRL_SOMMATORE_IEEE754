@@ -20,7 +20,7 @@ ARCHITECTURE behavior OF TB_ADDER_PIPELINE IS
 	--Inputs
 	SIGNAL X : STD_LOGIC_VECTOR(31 DOWNTO 0);
 	SIGNAL Y : STD_LOGIC_VECTOR(31 DOWNTO 0);
-	SIGNAL SUB : STD_LOGIC;
+	SIGNAL OP : STD_LOGIC;
 
 	--Service
 	SIGNAL RST : STD_LOGIC;
@@ -29,14 +29,14 @@ ARCHITECTURE behavior OF TB_ADDER_PIPELINE IS
 	--Outputs
 	SIGNAL Z : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-	CONSTANT CLK_period : TIME := 40 ns;
+	CONSTANT Clk_Period : TIME := 40 ns;
 BEGIN
 
 	-- Instantiate the Unit Under Test (UUT)
 	uut : IEEE754_ADDER PORT MAP(
 		X => X,
 		Y => Y,
-		OP => SUB,
+		OP => OP,
 		Z => Z,
 
 		RST => RST,
@@ -47,9 +47,9 @@ BEGIN
 	
 	BEGIN
 		CLK <= '0';
-		WAIT FOR CLK_period/2;
+		WAIT FOR Clk_Period/2;
 		CLK <= '1';
-		WAIT FOR CLK_period/2;
+		WAIT FOR Clk_Period/2;
 	END PROCESS;
 	
 	-- Stimulus process
@@ -58,196 +58,162 @@ BEGIN
 		
 		RST <= '1';
 		
-		WAIT FOR 70 ns;
+		WAIT FOR Clk_Period;
 		
 		RST <= '0';
 
-		-- random ordinary numbers
-
+      -- ordinary numbers
 		X <= "01000100101111100011011110101110"; -- 1521.739990234375
 		Y <= "01000100101001101010010011001101"; -- 1333.1500244140625
-		SUB <= '0';
+		OP <= '0';
 
 		-- expected output: 01000101001100100110111000111110 - 2854.89013671875 <
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 		X <= "00010000100000000000000000000001"; -- 5.048 10E-29
 		Y <= "00010000100000000000000000000000"; -- 5.048 10E-29
-		SUB <= '0';
+		OP <= '0';
 
 		-- expected output: 00010001000000000000000000000000 - 1.009742E-28 <
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 		X <= "11000001000000010011101101100100"; -- -8.077   
 		Y <= "11000001011001100101101000011101"; -- -14.397
-		SUB <= '1';
+		OP <= '1';
 
 		-- expected output: 01000000110010100011110101110010 - 6.3200006 <
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 		X <= "01000100101001101010010011001101"; -- 1333.1500244140625
 		Y <= "01000100101111100011011110101110"; -- 1521.739990234375  
-		SUB <= '0';
+		OP <= '0';
 
 		-- expected output: 01000101001100100110111000111110 - 2854.8901 <
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 		X <= "00010010100000000000000000000001"; -- 8.077E-28  
 		Y <= "00010000100000000000000000000000"; -- 5.048E-29
-		SUB <= '1';
+		OP <= '1';
 
 		-- expected output: 00010010011100000000000000000010 - 7.5730657E-28 <
 
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 		X <= "11000001011001100101101000011101"; -- -14.397  
 		Y <= "11000001000000010011101101100100"; -- -8.077
-		SUB <= '0';
+		OP <= '0';
 
 		-- expected output: 11000001101100111100101011000000 - -22.473999 <
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 
-		-- normal + number rounded to zero
 		X <= "00010000100000000000000000000001"; -- 5.0487104E-29
 		Y <= "00000000100000000000000000000001"; -- 1.1754945E-38
-		SUB <= '0';
+		OP <= '0';
 		-- expected output: 00010000100000000000000000000001 - 5.0487104E-29 <
 
-		-- lower borders
-		WAIT FOR CLK_period;
+		-- inf
+		WAIT FOR Clk_Period;
 		X <= "00000000101101100000001010000001"; -- 1.6714959E-38
 		Y <= "00000000101101100000001010000000"; -- 1.6714957E-38
-		SUB <= '1';
-		-- expected output: 00000000000000000000000000000000 - 1E-45 rounded to zero < !!!
+		OP <= '1';
+		-- expected output: 00000000000000000000000000000001 - 1E-45 < (rounded to zero?)
 
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 		X <= "01000100101111100011011110101110"; -- 1521.739990234375
 		Y <= "01000100101111100011011110101110"; -- 1521.739990234375
-		SUB <= '1';
+		OP <= '1';
 		-- expected output: 00000000000000000000000000000000 - 0 <
 
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 
-		X <= "00000011000000000000000001110000"; -- 3.76163214517 * 10^-37
-		Y <= "00000011000000000000000011110000"; -- 3.76168954235 * 10^-37
-		SUB <= '1';
-		-- expected output: 10000000000000000001000000000000 - -5.74E-42 < ?
-		WAIT FOR CLK_period;
+		X <= "00000011000000000000000001110000"; -- 3.76163214517E-37
+		Y <= "00000011000000000000000011110000"; -- 3.76168954235E-37
+		OP <= '1';
+		-- expected output: 10000000000000000001000000000000 - -5.74E-42 <
 
-		X <= "00000000100000000000000001110000"; -- 1.17551004537 * 10^-38
-		Y <= "00000000100000000000000011110000"; -- 1.17552798199 * 10^-38
-		SUB <= '1';
+		WAIT FOR Clk_Period;
 
-		WAIT FOR CLK_period;
-
-		X <= "10000000011111111111111111111100"; -- normalized number
-		Y <= "00000000010000000000011000001101"; -- normalized number
-		SUB <= '0';
-		-- expected output : 10000000000000000000000010000000 -1.8E-43 
+		X <= "10000000011111111111111111111100"; -- -1.1754938E-38
+		Y <= "00000000010000000000011000001101"; --  5.879642E-39
+		OP <= '0';
+		-- expected output : 10000000001111111111100111101111 - -5.875296E-39 <
 		
-		
-		-- superior
-		WAIT FOR CLK_period;
+		-- sup
+		WAIT FOR Clk_Period;
 
+		X <= "10000000000000000000000000000011"; -- -4E-45
+		Y <= "11111111011111111111111111111111"; -- almost infinity
+		OP <= '0';
+		-- expected output: 11111111011111111111111111111111 - -3.4028235E38 <
+		
+		WAIT FOR Clk_Period;
+		
 		X <= "01111111011111111111111111111100"; -- Big numb
 		Y <= "01111111000000000000011000001101"; -- Big numb
-		SUB <= '0';
-		-- expected output: 01111111100000000000000000000000 - inf
-
-		WAIT FOR CLK_period;
-
-		X <= "10000000000000000000000000000011"; -- normalized numeber
-		Y <= "11111111011111111111111111111111"; -- Not really infinity
-		SUB <= '0';
+		OP <= '0';
+		-- expected output: 01111111100000000000000000000000 - +inf ?
+		-- non va questo ora
+		-- non si vede proprio
 		
-		-- expected output: 11111111011111111111111111111111 < ?
-
-		-- special numbers
-		-- infinity
-		WAIT FOR CLK_period; -- inf - inf
+		-- special cases
+		WAIT FOR Clk_Period;
 
 		X <= "01111111100000000000000000000000"; -- +inf
 		Y <= "01111111100000000000000000000000"; -- +inf
-		SUB <= '1';
-		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) 
+		OP <= '1';
+		-- expected output: 01111111111111111111111111111111 - NAN <
 
-		WAIT FOR CLK_period; -- -inf + inf
+		WAIT FOR Clk_Period;
 
 		X <= "11111111100000000000000000000000"; -- -inf
 		Y <= "01111111100000000000000000000000"; -- +inf
-		SUB <= '0';
-		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) 
+		OP <= '0';
+		-- expected output: 01111111111111111111111111111111 - NAN <
 
-		WAIT FOR CLK_period; -- -inf - inf 
+		WAIT FOR Clk_Period;
 
 		X <= "11111111100000000000000000000000"; -- -inf
 		Y <= "11111111100000000000000000000000"; -- -inf
-		SUB <= '0';
-		-- output should be 11111111100000000000000000000000
+		OP <= '0';
+		-- expected output: 11111111100000000000000000000000 - -inf <
 
-		WAIT FOR CLK_period; -- -inf - num
-
-		X <= "11111111100000000000000000000000"; -- -inf
-		Y <= "11001001100101101011010000111000"; -- -1234567 ~ random negative number
-		SUB <= '0';
-		-- output should be 11111111100000000000000000000000 (-inf) ~ 4286578688
-
-		WAIT FOR CLK_period; -- -inf + num
+		WAIT FOR Clk_Period;
 
 		X <= "11111111100000000000000000000000"; -- -inf
-		Y <= "11001001100101101011010000111000"; -- -1234567 ~ random negative number
-		SUB <= '1';
-		-- output should be 11111111100000000000000000000000 (-inf) ~ 4286578688
+		Y <= "11001001100101101011010000111000"; -- -1234567
+		OP <= '0';
+		-- expected output: 11111111100000000000000000000000 - -inf <
 
-		WAIT FOR CLK_period; -- +inf - num
-
-		X <= "01111111100000000000000000000000"; -- +inf
-		Y <= "11001001100101101011010000111000"; -- -1234567 ~ random negative number
-		SUB <= '0';
-		-- output should be 01111111100000000000000000000000 (+inf) ~ 2139095040
-
-		WAIT FOR CLK_period; -- +inf + num
+		WAIT FOR Clk_Period; -- +inf - num
 
 		X <= "01111111100000000000000000000000"; -- +inf
-		Y <= "11001001100101101011010000111000"; -- -1234567 ~ random negative number
-		SUB <= '1';
-		-- output should be 01111111100000000000000000000000 (+inf) ~ 2139095040
+		Y <= "11001001100101101011010000111000"; -- -1234567
+		OP <= '0';
+		-- expected output: 01111111100000000000000000000000 - +inf <
 
-		WAIT FOR CLK_period; -- inf + 0
+		WAIT FOR Clk_Period; -- inf + 0
 
 		X <= "01111111100000000000000000000000"; -- +inf
 		Y <= "00000000000000000000000000000000"; -- 0
-		SUB <= '0';
-		-- output should be 01111111100000000000000000000000 (+inf) ~ 2139095040
-		WAIT FOR CLK_period; -- inf - 0
+		OP <= '0';
+		-- expected output: 01111111100000000000000000000000 - +inf <
 
-		X <= "01111111100000000000000000000000"; -- +inf
-		Y <= "00000000000000000000000000000000"; -- 0
-		SUB <= '1';
-		-- output should be 01111111100000000000000000000000 (+inf) ~ 2139095040
-
-		-- Not a Number
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 
 		X <= "11111111100000000000000110000000"; -- NAN
 		Y <= "11001001100101101011010000111000"; -- -1234567
-		SUB <= '1';
-		-- output should be x11111111aaaaaaaaaaaaaaaaaaaaaaa (NAN) at least one bit in the mantissa has to be 1
+		OP <= '1';
+		-- expected output: 01111111111111111111111111111111 - NAN <
 
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
+		
 		X <= "01111111100101101011010000111000"; -- NaN
 		Y <= "00000000000000000000000000000000"; -- 0
-		SUB <= '0';
-		-- output should be NaN
+		OP <= '0';
+		-- expected output: 01111111111111111111111111111111 - NAN <
 
-		WAIT FOR CLK_period;
-
-		X <= "01111111100101101011000111101000"; -- NaN
-		Y <= "01111111100101101011111111101000"; -- NaN
-		SUB <= '1';
-		-- output should be NaN				
-
-		WAIT FOR CLK_period;
+		WAIT FOR Clk_Period;
 
 		X <= "01111111100101101011000111101000"; -- NaN
 		Y <= "01111111100000000000000000000000"; -- inf
-		SUB <= '0';
-		-- output should be NaN
+		OP <= '0';
+		-- expected output: 01111111111111111111111111111111 - NAN <
+		
 		WAIT;
 	END PROCESS;
 

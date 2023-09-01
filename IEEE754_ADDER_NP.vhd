@@ -50,11 +50,15 @@ architecture Behavioral of IEEE754_ADDER_NP is
         );
     END COMPONENT;
 
-    -- Intermediate signals
-    SIGNAL XSIGN, YSIGN, SPECIAL : STD_LOGIC;
-    SIGNAL XEXP, XEXP_INCR : STD_LOGIC_VECTOR(7 DOWNTO 0);
-    SIGNAL XMAN, YMAN, ZMANT : STD_LOGIC_VECTOR(26 DOWNTO 0);
-	 SIGNAL SPECIAL_RESULT : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    -- Intermediate signals for PRE_SUM
+    SIGNAL pre_XSIGN, pre_YSIGN, pre_SPECIAL : STD_LOGIC;
+    SIGNAL pre_XEXP : STD_LOGIC_VECTOR(7 DOWNTO 0);
+    SIGNAL pre_XMAN, pre_YMAN : STD_LOGIC_VECTOR(26 DOWNTO 0);
+    SIGNAL pre_SPECIAL_RESULT : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    -- Intermediate signals for SUM
+    SIGNAL sum_ZMANT : STD_LOGIC_VECTOR(26 DOWNTO 0);
+    SIGNAL sum_XEXP_INCR : STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 begin
 
@@ -63,33 +67,33 @@ begin
         X => X,
         Y => Y,
         OP => OP,
-        XSIGN => XSIGN,
-        YSIGN => YSIGN,
-        XEXP => XEXP,
-        XMAN => XMAN,
-        YMAN => YMAN,
-        SPECIAL => SPECIAL,
-		  SPECIAL_RESULT => SPECIAL_RESULT
+        XSIGN => pre_XSIGN,
+        YSIGN => pre_YSIGN,
+        XEXP => pre_XEXP,
+        XMAN => pre_XMAN,
+        YMAN => pre_YMAN,
+        SPECIAL => pre_SPECIAL,
+        SPECIAL_RESULT => pre_SPECIAL_RESULT
     );
 
     U2: SUM
     PORT MAP(
-        XSIGN => XSIGN,
-        YSIGN => YSIGN,
-		  XEXP => XEXP,
-        XMAN => XMAN,
-        YMAN => YMAN,
-        ZMANT => ZMANT,
-        XEXP_INCR => XEXP_INCR
+        XSIGN => pre_XSIGN,
+        YSIGN => pre_YSIGN,
+        XEXP => pre_XEXP,
+        XMAN => pre_XMAN,
+        YMAN => pre_YMAN,
+        ZMANT => sum_ZMANT,
+        XEXP_INCR => sum_XEXP_INCR
     );
 
     U3: POST_SUM
     PORT MAP(
-        XSIGN => XSIGN,
-        SPECIAL => SPECIAL,
-		  SPECIAL_RESULT => SPECIAL_RESULT,
-        XEXP => XEXP_INCR,
-        MAN => ZMANT,
+        XSIGN => pre_XSIGN,
+        SPECIAL => pre_SPECIAL,
+        SPECIAL_RESULT => pre_SPECIAL_RESULT,
+        XEXP => sum_XEXP_INCR,
+        MAN => sum_ZMANT,
         Z => Z
     );
 

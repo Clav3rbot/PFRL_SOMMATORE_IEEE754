@@ -54,6 +54,22 @@ BEGIN
                 
 					 WAIT FOR 100 ns;
 					 
+					 XSIGN <= '1';
+					 SPECIAL <= '0';
+					 SPECIAL_RESULT <= "01010101010101010101010101010101";
+					 XEXP <= "11111110";
+					 MAN <= "111111111111111111111111100";
+					 
+					 WAIT FOR 50 ns;
+					 
+					 XSIGN <= '0';
+					 SPECIAL <= '0';
+					 SPECIAL_RESULT <= "01010101010101010101010101010101";
+					 XEXP <= "00000001";
+					 MAN <= "000000000000000000000001000";
+					 
+					 WAIT FOR 50 ns;
+					 
 					 XSIGN <= '0';
 					 SPECIAL <= '0';
 					 SPECIAL_RESULT <= "01010101010101010101010101010101";

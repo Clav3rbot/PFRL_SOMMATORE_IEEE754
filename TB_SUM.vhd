@@ -57,6 +57,15 @@ BEGIN
 
 		WAIT FOR 100 ns;
 		
+	   -- strange case
+		XSIGN <= '1';
+		YSIGN <= '1';
+		XEXP <= "11111110";
+		XMAN <= "111111111111111111111111000";
+		YMAN <= "000000000000000000000000000";
+
+		WAIT FOR 50 ns;
+		
 		-- strange case
 		XSIGN <= '0';
 		YSIGN <= '1';

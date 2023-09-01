@@ -8,9 +8,9 @@ ENTITY IEEE754_ADDER IS
                 Y : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
                 OP : IN STD_LOGIC;
                 Z : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-
-                CLK : IN STD_LOGIC;
-                RST : IN STD_LOGIC
+                 
+					 CLK : IN STD_LOGIC;
+					 RST : IN STD_LOGIC
         );
 END IEEE754_ADDER;
 
@@ -27,7 +27,7 @@ ARCHITECTURE pipelined OF IEEE754_ADDER IS
                         XMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
                         YMAN : OUT STD_LOGIC_VECTOR (26 DOWNTO 0);
                         SPECIAL : OUT STD_LOGIC;
-                        SPECIAL_RESULT : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+								SPECIAL_RESULT : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
                 );
         END COMPONENT;
 
@@ -47,177 +47,114 @@ ARCHITECTURE pipelined OF IEEE754_ADDER IS
                 PORT (
                         XSIGN : IN STD_LOGIC;
                         SPECIAL : IN STD_LOGIC;
-                        SPECIAL_RESULT : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+								SPECIAL_RESULT : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
                         XEXP : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
                         MAN : IN STD_LOGIC_VECTOR(26 DOWNTO 0);
                         Z : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
                 );
         END COMPONENT;
-
-        -- Input PreSum
-        SIGNAL Pre_X_In : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL Pre_Y_In : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL Pre_Op_In : STD_LOGIC := '0';
-
-        -- Input PreSum-Sum
-        SIGNAL PreSum_XSign_In : STD_LOGIC := '0';
-        SIGNAL PreSum_YSign_In : STD_LOGIC := '0';
-        SIGNAL PreSum_XExp_In : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PreSum_XMan_In : STD_LOGIC_VECTOR(26 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PreSum_YMan_In : STD_LOGIC_VECTOR(26 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PreSum_Special_In : STD_LOGIC := '0';
-        SIGNAL PreSum_SpecialResult_In : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-
-        -- Output PreSum-Sum
-        SIGNAL PreSum_XSign_Out : STD_LOGIC := '0';
-        SIGNAL PreSum_YSign_Out : STD_LOGIC := '0';
-        SIGNAL PreSum_XExp_Out : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PreSum_XMan_Out : STD_LOGIC_VECTOR(26 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PreSum_YMan_Out : STD_LOGIC_VECTOR(26 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PreSum_Special_Out : STD_LOGIC := '0';
-        SIGNAL PreSum_SpecialResult_Out : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-
-        -- Input Sum-PostSum
-        SIGNAL PostSum_XSign_In : STD_LOGIC := '0';
-        --SIGNAL PostSum_SpecialResult_In : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        --SIGNAL PostSum_Special_In : STD_LOGIC := '0';
-        SIGNAL PostSum_XExp_In : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PostSum_XMan_In : STD_LOGIC_VECTOR(26 DOWNTO 0) := (OTHERS => '0');
-
-        -- Output Sum-PostSum
-        SIGNAL PostSum_XSign_Out : STD_LOGIC := '0';
-        SIGNAL PostSum_SpecialResult_Out : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PostSum_Special_Out : STD_LOGIC := '0';
-        SIGNAL PostSum_XExp_Out : STD_LOGIC_VECTOR(7 DOWNTO 0) := (OTHERS => '0');
-        SIGNAL PostSum_XMan_Out : STD_LOGIC_VECTOR(26 DOWNTO 0) := (OTHERS => '0');
-
-        --Output PostSum
-        SIGNAL Post_Z_Out : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+		  
+		  -- Input signals
+		  SIGNAL rIN_X : STD_LOGIC_VECTOR(31 DOWNTO 0);
+        SIGNAL rIN_Y : STD_LOGIC_VECTOR(31 DOWNTO 0);
+        SIGNAL rIN_OP : STD_LOGIC;
+		  
+        -- Intermediate signals
+        SIGNAL XSIGN, YSIGN, SPECIAL, r_XSIGN, r_YSIGN, r_SPECIAL, r2_XSIGN : STD_LOGIC;
+        SIGNAL XEXP, XEXP_INCR, r_XEXP, r2_XEXP_INCR : STD_LOGIC_VECTOR(7 DOWNTO 0);
+        SIGNAL XMAN, YMAN, ZMANT, r_XMAN, r_YMAN, r2_ZMANT : STD_LOGIC_VECTOR(26 DOWNTO 0);
+		  SIGNAL SPECIAL_RESULT, r_SPECIAL_RESULT : STD_LOGIC_VECTOR(31 DOWNTO 0);
+		  
+		  -- Output signals
+		  signal OUTPUT : std_logic_vector(31 downto 0);
+		  signal rOUT_Z : std_logic_vector(31 downto 0);
 
 BEGIN
 
-        ----------------------------------------FRONTE DI CLOCK --------------------------------------
-
-        --registro iniziale	
-        PreSum : PROCESS (CLK)
-        BEGIN
-                IF (CLK' event AND CLK = '1') THEN
-                        IF (RST = '1') THEN
-                                Pre_X_In <= (OTHERS => '0');
-                                Pre_Y_In <= (OTHERS => '0');
-                                Pre_Op_In <= '0';
-                        ELSE
-                                Pre_X_In <= X;
-                                Pre_Y_In <= Y;
-                                Pre_Op_In <= OP;
-                        END IF;
-                END IF;
-        END PROCESS;
-
-        -- Fase Pre Somma
-
-        A_PreSum : PRE_SUM
+        U1 : PRE_SUM
         PORT MAP(
-                X => Pre_X_In,
-                Y => Pre_Y_In,
-                OP => Pre_Op_In,
-                XSIGN => PreSum_XSign_In,
-                YSIGN => PreSum_YSign_In,
-                XEXP => PreSum_XExp_In,
-                XMAN => PreSum_XMan_In,
-                YMAN => PreSum_YMan_In,
-                SPECIAL => PreSum_Special_In,
-                SPECIAL_RESULT => PreSum_SpecialResult_In
+                X => rIN_X,
+                Y => rIN_Y,
+                OP => rIN_OP,
+                XSIGN => XSIGN,
+                YSIGN => YSIGN,
+                XEXP => XEXP,
+                XMAN => XMAN,
+                YMAN => YMAN,
+                SPECIAL => SPECIAL,
+					 SPECIAL_RESULT => SPECIAL_RESULT
         );
 
-        ----------------------------------------FRONTE DI CLOCK --------------------------------------
-
-        -- registro tra pre-somma e somma
-
-        PreSum_Sum : PROCESS (CLK)
-        BEGIN
-                IF (CLK' event AND CLK = '1') THEN
-                        IF (RST = '1') THEN
-                                PreSum_XSign_Out <= '0';
-                                PreSum_YSign_Out <= '0';
-                                PreSum_XExp_Out <= (OTHERS => '0');
-                                PreSum_XMan_Out <= (OTHERS => '0');
-                                PreSum_YMan_Out <= (OTHERS => '0');
-                                PreSum_Special_Out <= '0';
-                                PreSum_SpecialResult_Out <= (OTHERS => '0');
-                        ELSE
-                                PreSum_XSign_Out <= PreSum_XSign_In;
-                                PreSum_YSign_Out <= PreSum_YSign_In;
-                                PreSum_XExp_Out <= PreSum_XExp_In;
-                                PreSum_XMan_Out <= PreSum_XMan_In;
-                                PreSum_YMan_Out <= PreSum_YMan_In;
-                                PreSum_Special_Out <= PreSum_Special_In;
-                                PreSum_SpecialResult_Out <= PreSum_SpecialResult_In;
-                        END IF;
-                END IF;
-        END PROCESS;
-
-        -- Fase Somma
-
-        B_Sum : SUM
+        U2 : SUM
         PORT MAP(
-                XSIGN => PreSum_XSign_Out,
-                YSIGN => PreSum_YSign_out,
-                XEXP => PreSum_XExp_Out,
-                XMAN => PreSum_XMan_Out,
-                YMAN => PreSum_YMan_Out,
-                XEXP_INCR => PostSum_XExp_In,
-                ZMANT => PostSum_XMan_In
+                XSIGN => r_XSIGN,
+                YSIGN => r_YSIGN,
+                XEXP => r_XEXP,
+                XMAN => r_XMAN,
+                YMAN => r_YMAN,
+                ZMANT => ZMANT,
+                XEXP_INCR => XEXP_INCR
         );
 
-        ----------------------------------------FRONTE DI CLOCK --------------------------------------
-
-        -- registro tra somma e fase correttiva
-
-        S_PostS : PROCESS (CLK)
-        BEGIN
-                IF (CLK' event AND CLK = '1') THEN
-                        IF (RST = '1') THEN
-                                PostSum_XSign_Out <= '0';
-                                PostSum_XExp_Out <= (OTHERS => '0');
-                                PostSum_XMan_Out <= (OTHERS => '0');
-                                PostSum_SpecialResult_Out <= (OTHERS => '0');
-                                PostSum_Special_Out <= '0';
-                        ELSE
-                                PostSum_XSign_Out <= PostSum_XSign_In;
-                                PostSum_XExp_Out <= PostSum_XExp_In;
-                                PostSum_XMan_Out <= PostSum_XMan_In;
-                                PostSum_SpecialResult_Out <= PreSum_SpecialResult_In;
-                                PostSum_Special_Out <= PreSum_Special_In;
-
-                        END IF;
-                END IF;
-        END PROCESS;
-
-        -- Fase Correttiva/Normalizzazione
-
-        C_PostSum : POST_SUM
+        U3 : POST_SUM
         PORT MAP(
-                XSIGN => PostSum_XSign_Out,
-                XEXP => PostSum_XExp_Out,
-                MAN => PostSum_XMan_Out,
-                SPECIAL => PostSum_Special_Out,
-                SPECIAL_RESULT => PostSum_SpecialResult_Out,
-                Z => Post_Z_Out
+                XSIGN => r2_XSIGN,
+                SPECIAL => r_SPECIAL,
+					 SPECIAL_RESULT => r_SPECIAL_RESULT,
+                XEXP => r2_XEXP_INCR,
+                MAN => r2_ZMANT,
+                Z => OUTPUT
         );
+		  Z <= rOUT_Z;
 
-
-        ----------------------------------------FRONTE DI CLOCK --------------------------------------
-        -- registro finale
-
-        PostS : PROCESS (CLK)
+        CLOCK : PROCESS (CLK, RST)
         BEGIN
-                IF (CLK' event AND CLK = '1') THEN
-                        IF (RST = '1') THEN
-                                Z <= (OTHERS => '0');
-                        ELSE
-                                Z <= Post_Z_Out;
+                IF (RST = '1') THEN
+								
+								-- INPUT registers
+								rIN_X   <= (others => '0');
+								rIN_Y   <= (others => '0');
+								rIN_OP <= '0';
+								
+                        -- Reset all registers
+                        r_XSIGN <= '0';
+                        r_YSIGN <= '0';
+                        r_SPECIAL <= '0';
+								r_SPECIAL_RESULT <= (OTHERS => '0');
+                        r_XEXP <= (OTHERS => '0');
+                        r_XMAN <= (OTHERS => '0');
+                        r_YMAN <= (OTHERS => '0');
+
+                        r2_XSIGN <= '0';
+                        r2_XEXP_INCR <= (OTHERS => '0');
+                        r2_ZMANT <= (OTHERS => '0');
+                        --r2_XCASE <= (OTHERS => '0');
+                        --r2_YCASE <= (OTHERS => '0');
+								
+								rOUT_Z <= (others => '0');
+                ELSE
+                        IF (CLK'EVENT AND CLK = '1') THEN
+										  -- INPUT registers
+										  rIN_X   <= X;
+										  rIN_Y   <= Y;
+										  rIN_OP <= OP;
+                                -- Register values after pre_sum
+                                r_XSIGN <= XSIGN;
+                                r_YSIGN <= YSIGN;
+                                r_SPECIAL <= SPECIAL;
+										  r_SPECIAL_RESULT <= SPECIAL_RESULT;
+                                r_XEXP <= XEXP;
+                                r_XMAN <= XMAN;
+                                r_YMAN <= YMAN;
+
+                                -- Register values after sum
+                                r2_XSIGN <= r_XSIGN;
+                                r2_XEXP_INCR <= XEXP_INCR;
+                                r2_ZMANT <= ZMANT;
+										  
+										  rOUT_Z <= OUTPUT;
                         END IF;
                 END IF;
         END PROCESS;
+
 END pipelined;
